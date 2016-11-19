@@ -33,7 +33,7 @@ public class StringUtility {
      * @return yyyyMMddTHHmmssフォーマットの文字列
      */
     public static String convertDateToString(Date date) {
-        SimpleDateFormat formatter = new SimpleDateFormat("DATE_FOMAT");
+        SimpleDateFormat formatter = new SimpleDateFormat(DATE_FOMAT);
         return formatter.format(date);
     }
 
@@ -46,7 +46,7 @@ public class StringUtility {
      * @throws ParseException
      */
     public static Date convertStringToDate(String dateStr) throws ParseException {
-        SimpleDateFormat formatter = new SimpleDateFormat("DATE_FOMAT");
+        SimpleDateFormat formatter = new SimpleDateFormat(DATE_FOMAT);
         return formatter.parse(dateStr);
     }
 }
