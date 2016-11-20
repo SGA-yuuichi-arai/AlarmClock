@@ -300,6 +300,7 @@ public class AlarmRegistHelper {
 
         Intent intent = new Intent(context, AlarmReceiver.class);
         intent.setType(entity.getAlarmId() + entity.getRegistDate());
+        intent.putExtra("alarmID", entity.getAlarmId());
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
 
         try {
@@ -330,6 +331,7 @@ public class AlarmRegistHelper {
 
         Intent intent = new Intent(context, AlarmReceiver.class);
         intent.setType(entity.getAlarmId() + entity.getRegistDate() + dayOfWeek);
+        intent.putExtra("alarmID", entity.getAlarmId());
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
 
 
