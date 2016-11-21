@@ -11,7 +11,6 @@ import com.so.okamnk.alarmclock.receiver.AlarmReceiver;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 
 /**
  * アラームアプリのアラーム登録、解除クラス
@@ -306,10 +305,10 @@ public class AlarmRegistHelper {
         try {
             AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
-            Date alarmDate = StringUtility.convertStringToDate(entity.getAlarmTime());
+            Calendar entityCalendar = StringUtility.convertStringToCalendar(entity.getAlarmTime());
 
-            Calendar calendar = AlarmClockUtility.getNearCalender(alarmDate.getHours(), alarmDate.getMinutes());
-            am.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+            Calendar nearCalender = AlarmClockUtility.getNearCalender(entityCalendar.get(Calendar.HOUR), entityCalendar.get(Calendar.MINUTE));
+            am.set(AlarmManager.RTC_WAKEUP, nearCalender.getTimeInMillis(), pendingIntent);
             if (listener != null) {
                 listener.onRegistration(entity.getAlarmId(), RegistReturnCode.RET_SUCCEEDED);
             }
@@ -338,9 +337,9 @@ public class AlarmRegistHelper {
         try {
             AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
-            Date alarmDate = StringUtility.convertStringToDate(entity.getAlarmTime());
-            Calendar calendar = AlarmClockUtility.getNearCalender(alarmDate.getHours(), alarmDate.getMinutes(), dayOfWeek);
-            am.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), WEEKLY_INTERVAL, pendingIntent);
+            Calendar entityCalendar = StringUtility.convertStringToCalendar(entity.getAlarmTime());
+            Calendar nearCalender = AlarmClockUtility.getNearCalender(entityCalendar.get(Calendar.HOUR), entityCalendar.get(Calendar.MINUTE), dayOfWeek);
+            am.setRepeating(AlarmManager.RTC_WAKEUP, nearCalender.getTimeInMillis(), WEEKLY_INTERVAL, pendingIntent);
             if (listener != null) {
                 listener.onRegistration(entity.getAlarmId(), RegistReturnCode.RET_SUCCEEDED);
             }

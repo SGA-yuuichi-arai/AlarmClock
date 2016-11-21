@@ -2,6 +2,7 @@ package com.so.okamnk.alarmclock.util;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -38,15 +39,17 @@ public class StringUtility {
     }
 
     /**
-     * 文字列で表現された日付(yyyyMMddTHHmmss)を、Date型に変換します<br>
+     * 文字列で表現された日付(yyyyMMddTHHmmss)を、Calendar型に変換します<br>
      * フォーマットが異なる場合、ParseExceptionをthrowします
      *
      * @param dateStr 文字列の日付
-     * @return Date型の指定日時
+     * @return Calendar型の指定日時
      * @throws ParseException
      */
-    public static Date convertStringToDate(String dateStr) throws ParseException {
+    public static Calendar convertStringToCalendar(String dateStr) throws ParseException {
         SimpleDateFormat formatter = new SimpleDateFormat(DATE_FOMAT);
-        return formatter.parse(dateStr);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(formatter.parse(dateStr));
+        return calendar;
     }
 }
