@@ -25,9 +25,56 @@ public class AlarmEntity {
     private boolean repeatSaturday = false;
     private boolean alarmEnabled = false;
 
+    /**
+     * 音量パターンのEnum
+     */
+    public enum SOUND_MODE {
+        NORMAL, LARGE_SLOWLY;
+    }
+
+    /**
+     * マナーモードのEnum
+     */
+    public enum MANOR_MODE {
+        FOLLOW_OS, INDEPENDENT;
+    }
+
+    /**
+     * アラーム解除方法のEnum
+     */
+    public enum STOP_MODE {
+        TAP, ADDITION;
+    }
+
+    /**
+     * デフォルトコンストラクタ
+     */
     public AlarmEntity() {
     }
 
+    /**
+     * 全てのアラーム情報が登録できるコンストラクタ
+     *
+     * @param alarmId
+     * @param registDate
+     * @param alarmName
+     * @param alarmTime
+     * @param soundPath
+     * @param soundMode
+     * @param soundVolume
+     * @param manorMode
+     * @param stopMode
+     * @param snoozeInterval
+     * @param snoozeNum
+     * @param repeatSunday
+     * @param repeatMonday
+     * @param repeatTuesday
+     * @param repeatWednesday
+     * @param repeatThrsday
+     * @param repeatFriday
+     * @param repeatSaturday
+     * @param alarmEnabled
+     */
     public AlarmEntity(int alarmId, String registDate, String alarmName, String alarmTime, String soundPath, int soundMode,
                        int soundVolume, int manorMode, int stopMode, int snoozeInterval, int snoozeNum, boolean repeatSunday,
                        boolean repeatMonday, boolean repeatTuesday, boolean repeatWednesday, boolean repeatThrsday,
@@ -53,6 +100,19 @@ public class AlarmEntity {
         this.alarmEnabled = alarmEnabled;
     }
 
+    /**
+     * NULLを許可しないカラムをセットできるコンストラクタ
+     *
+     * @param alarmId
+     * @param registDate
+     * @param alarmName
+     * @param alarmTime
+     * @param soundPath
+     * @param soundMode
+     * @param soundVolume
+     * @param manorMode
+     * @param alarmEnabled
+     */
     public AlarmEntity(int alarmId, String registDate, String alarmName, String alarmTime, String soundPath, int soundMode,
                        int soundVolume, int manorMode, boolean alarmEnabled) {
         this.alarmId = alarmId;
@@ -66,6 +126,11 @@ public class AlarmEntity {
         this.alarmEnabled = alarmEnabled;
     }
 
+    /**
+     * 全てのアラーム情報を、文字列に整形して、1行で返します。
+     *
+     * @return 整形した文字列
+     */
     public String toString() {
         String formatingString = "";
         formatingString = "alarmId=" + formatingString + String.valueOf(this.alarmId);
