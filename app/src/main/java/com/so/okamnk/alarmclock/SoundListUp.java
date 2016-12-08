@@ -13,7 +13,7 @@ import android.widget.ArrayAdapter;
  * Created by masa nomoto on 2016/11/21.
  */
 
-public class SoundList {
+public class SoundListUp {
 
     ArrayAdapter<String> adapter;
 
