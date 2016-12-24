@@ -11,6 +11,10 @@
         <item>普通</item>
         <item>だんだん大きく</item>
     </string-array>
+    <string-array name="release">
+        <item>タップ</item>
+        <item>足し算</item>
+    </string-array>
     <string-array name="interval">
         <item>1分</item>
         <item>3分</item>
