@@ -1,9 +1,7 @@
 package com.so.okamnk.alarmclock;
 
-import java.lang.Object;
 import android.app.Activity;
 import android.content.Context;
-import android.content.ContextWrapper;
 import android.database.Cursor;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
@@ -13,19 +11,18 @@ import android.widget.ArrayAdapter;
  * Created by masa nomoto on 2016/11/21.
  */
 
-public class SoundListUp {
+public class SoundListActivity extends Activity{
 
     ArrayAdapter<String> adapter;
 
     private void getRingtoneList(){
-/*
-        //RingtoneManager ringtoneManager;
+
+        RingtoneManager ringtoneManager;
         Cursor cursor;
-        private static SoundListUp instance = null;
+        SoundListActivity instance = null;
         Context context;
 
-        //ringtoneManager = new RingtoneManager(getApplicationContext());
-        RingtoneManager ringtoneManager = new RingtoneManager(context.getApplicationContext());
+        ringtoneManager = new RingtoneManager(getApplicationContext());
         cursor = ringtoneManager.getCursor();
 
         if(cursor.moveToFirst()){
@@ -33,7 +30,6 @@ public class SoundListUp {
                 //リストビューに先頭の着信音から出力
             }
         }
-*/
     }
 
     private void getMusicList(){
@@ -41,25 +37,25 @@ public class SoundListUp {
     }
 
     private void playSound(String uri){
-/*
+
         Ringtone ringtone;
 
         Uri muri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
-        ringtone = RingtoneManager.getRingtone();
+        ringtone = RingtoneManager.getRingtone(getApplicationContext(),muri);
 
         ringtone.play();
-*/
+
     }
 
     private void stopSound(String uri){
-/*
+
         Ringtone ringtone;
 
         Uri muri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
-        ringtone = RingtoneManager.getRingtone();
+        ringtone = RingtoneManager.getRingtone(getApplicationContext(),muri);
 
         ringtone.stop();
-*/
+
     }
 
 }

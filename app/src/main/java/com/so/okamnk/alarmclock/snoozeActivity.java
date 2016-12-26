@@ -1,12 +1,13 @@
 package com.so.okamnk.alarmclock;
 
+import android.app.Activity;
 import android.icu.text.IDNA;
 
 /**
  * Created by masa nomoto on 2016/11/21.
  */
 
-public class snoozeActivity {
+public class SnoozeActivity extends Activity{
 
     public String caluculation;
     public int answer;
