@@ -1,5 +1,7 @@
 package com.so.okamnk.alarmclock;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -86,11 +88,13 @@ public class AlarmRegistActivity extends AppCompatActivity implements View.OnCli
                 Log.i("onStartTrackingTouch()",
                         String.valueOf(seekBar.getProgress()));
             }
+
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromTouch) {
                 Log.i("onProgressChanged()",
                         String.valueOf(progress) + ", " + String.valueOf(fromTouch));
             }
+
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 Log.i("onStopTrackingTouch()",
@@ -146,19 +150,20 @@ public class AlarmRegistActivity extends AppCompatActivity implements View.OnCli
 
     /**
      * スピナーとリスナーの登録
+     *
      * @param spinner
      * @param resId
      * @param arrayId
      */
-    private void setSpinnerListener (final Spinner spinner, final int resId, final int arrayId) {
+    private void setSpinnerListener(final Spinner spinner, final int resId, final int arrayId) {
 
         final String[] list;
 
         list = getResources().getStringArray(arrayId);
-        ArrayAdapter<String> adapter_pattern = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, list);
-        spinner.setAdapter(adapter_pattern);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, list);
+        spinner.setAdapter(adapter);
         spinner.setFocusable(false);
-        adapter_pattern.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         ((Spinner) findViewById(resId)).setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -207,6 +212,7 @@ public class AlarmRegistActivity extends AppCompatActivity implements View.OnCli
 
     /**
      * ボタンとTextViewのイベント取得
+     *
      * @param v
      */
     public void onClick(View v) {
@@ -239,6 +245,7 @@ public class AlarmRegistActivity extends AppCompatActivity implements View.OnCli
 
     /**
      * トグルボタンのイベント取得
+     *
      * @param buttonView
      * @param isChecked
      */
@@ -300,7 +307,7 @@ public class AlarmRegistActivity extends AppCompatActivity implements View.OnCli
         manager.setType(RingtoneManager.TYPE_RINGTONE); //着信音
 
         seekBar.setProgress(50);
-        String seekBarValue = ((Integer)seekBar.getProgress()).toString();
+        String seekBarValue = ((Integer) seekBar.getProgress()).toString();
 
         textView_volumeValue.setText(seekBarValue);
 
@@ -378,30 +385,39 @@ public class AlarmRegistActivity extends AppCompatActivity implements View.OnCli
     /**
      * プレビューを表示
      * アラーム解除画面へ遷移する
+     *
      * @param mode
      * @param v
      */
     public void transitionToAlarmCancel(STOP_MODE mode, View v) {
 
-        // todo:アラーム解除画面に遷移させるように変更
+        startActivity(new Intent(AlarmRegistActivity.this, AlarmActivity.class));
+
+        /* アラーム解除画面に遷移させるように変更
         if (mode.equals(STOP_MODE.TAP)) {
             startActivity(new Intent(AlarmRegistActivity.this, AboutActivity.class));
         } else if (mode.equals(STOP_MODE.ADDITION)) {
             startActivity(new Intent(AlarmRegistActivity.this, AboutActivity.class));
         }
+        */
     }
 
     /**
      * アラーム音選択画面へ遷移
+     *
      * @param v
      */
     public void transitionToAlarmSelect(View v) {
 
         alarmEntity = setAlarmEntity(alarmEntity);
 
-        // todo:アラーム音選択画面に遷移させるように変更
+        // Todo:戻ってきたときにAlarmEntityが初期化される
+        startActivity(new Intent(AlarmRegistActivity.this, SoundListActivity.class));
+
+        /* アラーム音選択画面に遷移させるように変更
         Intent intent = new Intent(AlarmRegistActivity.this, AboutActivity.class);
         startActivity(intent);
+        */
     }
 
     public boolean determineFixedButton(View v) {
@@ -411,7 +427,7 @@ public class AlarmRegistActivity extends AppCompatActivity implements View.OnCli
         AlarmEntity entityAdapter = adapter.saveAlarm(alarmEntity);
         if (alarmEntity.equals(entityAdapter)) {
         } else {
-            // TODO: ダイアログ表示
+            showDialog("データベース登録失敗", "データベースの登録に失敗しました");
             return false;
         }
 
@@ -419,12 +435,12 @@ public class AlarmRegistActivity extends AppCompatActivity implements View.OnCli
         entities.add(alarmEntity);
 
         AlarmRegistHelper helper = AlarmRegistHelper.getInstance();
-        helper.regist(getApplicationContext(), entities, null);
+        helper.regist(getApplicationContext(), entities, null); //nullでいいのか不明
 
         boolean isRegistered = helper.isRegistered(this, alarmEntity);
-            if (isRegistered) {
+        if (isRegistered) {
         } else {
-            // TODO: ダイアログ表示
+            showDialog("アラーム登録失敗", "アラームの登録に失敗しました");
             return false;
         }
 
@@ -443,6 +459,7 @@ public class AlarmRegistActivity extends AppCompatActivity implements View.OnCli
 
     /**
      * TimePickerの値を「hh:mm」のStringにする
+     *
      * @param picker
      * @return
      */
@@ -468,10 +485,11 @@ public class AlarmRegistActivity extends AppCompatActivity implements View.OnCli
 
     /**
      * UIの状態を取得してAlarmEntityにsetする
+     *
      * @param entity
      * @return
      */
-    private AlarmEntity setAlarmEntity (AlarmEntity entity) {
+    private AlarmEntity setAlarmEntity(AlarmEntity entity) {
 
         entity.setAlarmId(alarmId);
 
@@ -480,43 +498,53 @@ public class AlarmRegistActivity extends AppCompatActivity implements View.OnCli
         entity.setRegistDate(resistDate);
 
         Editable alarmName = editText_alarmName.getText();
-        alarmEntity.setAlarmName(alarmName.toString());
+        entity.setAlarmName(alarmName.toString());
 
         String alarmTime = getTimePicker(timePicker_alarmTime);
-        alarmEntity.setAlarmTime(alarmTime);
+        entity.setAlarmTime(alarmTime);
 
-        alarmEntity.setSoundPath(textView_alarmValue.getText().toString());
+        entity.setSoundPath(textView_alarmValue.getText().toString());
 
-        alarmEntity.setSoundMode(spinner_pattern.getSelectedItemPosition());
+        entity.setSoundMode(spinner_pattern.getSelectedItemPosition());
 
-        alarmEntity.setSoundVolume(seekBar.getProgress());
+        entity.setSoundVolume(seekBar.getProgress());
 
-        alarmEntity.setManorMode(spinner_mannerMode.getSelectedItemPosition());
+        entity.setManorMode(spinner_mannerMode.getSelectedItemPosition());
 
-        alarmEntity.setStopMode(spinner_release.getSelectedItemPosition());
+        entity.setStopMode(spinner_release.getSelectedItemPosition());
 
-        alarmEntity.setSnoozeInterval(spinner_interval.getSelectedItemPosition());
+        entity.setSnoozeInterval(spinner_interval.getSelectedItemPosition());
 
-        alarmEntity.setSnoozeNum(spinner_times.getSelectedItemPosition());
+        entity.setSnoozeNum(spinner_times.getSelectedItemPosition());
 
-        alarmEntity.setRepeatMonday(toggleButton_monday.isChecked());
+        entity.setRepeatMonday(toggleButton_monday.isChecked());
 
-        alarmEntity.setRepeatTuesday(toggleButton_tuesday.isChecked());
+        entity.setRepeatTuesday(toggleButton_tuesday.isChecked());
 
-        alarmEntity.setRepeatWednesday(toggleButton_wednesday.isChecked());
+        entity.setRepeatWednesday(toggleButton_wednesday.isChecked());
 
-        alarmEntity.setRepeatThrsday(toggleButton_thursday.isChecked());
+        entity.setRepeatThrsday(toggleButton_thursday.isChecked());
 
-        alarmEntity.setRepeatFriday(toggleButton_friday.isChecked());
+        entity.setRepeatFriday(toggleButton_friday.isChecked());
 
-        alarmEntity.setRepeatSaturday(toggleButton_saturday.isChecked());
+        entity.setRepeatSaturday(toggleButton_saturday.isChecked());
 
-        alarmEntity.setRepeatSunday(toggleButton_sunday.isChecked());
+        entity.setRepeatSunday(toggleButton_sunday.isChecked());
 
         return entity;
     }
 
+    private void showDialog(String title, String message) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(title);
+        builder.setMessage(message);
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+            }
+        });
+        builder.show();
 
+    }
     /*
     @Override
     public void onRegistration(int alarmID, AlarmRegistHelper.RegistReturnCode returnCode) {
