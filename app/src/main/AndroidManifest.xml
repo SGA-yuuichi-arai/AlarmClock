@@ -18,10 +18,17 @@
             </intent-filter>
         </activity>
         <service android:name=".AlarmService"></service>
+
         <receiver android:name=".receiver.PhoneStateReceiver">
             <intentfilater>
                 <action android:name="android.intent.action.PHONE_STATE" />
             </intentfilater>
+        </receiver>
+        <receiver android:name=".receiver.PackageReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+                <action android:name="android.intent.action.PACKAGE_FULLY_REMOVED"/>
+            </intent-filter>
         </receiver>
     </application>
 
