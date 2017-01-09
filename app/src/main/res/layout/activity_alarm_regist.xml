@@ -63,7 +63,7 @@
 
                     <!-- 確定 -->
                     <ImageButton
-                        android:id="@+id/imageButton_resist"
+                        android:id="@+id/imageButton_fix"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="0.2"
@@ -111,6 +111,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:layout_weight="1"
                     android:orientation="horizontal">
 
                     <!-- アラーム音-->
@@ -127,14 +128,14 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="TextView" />
+                        android:clickable="true"
+                        android:text="" />
 
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_weight="1"
                     android:orientation="horizontal">
 
                     <!-- 音量 -->
@@ -150,100 +151,199 @@
                         android:id="@+id/seekBar_volume"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1" />
+                        android:layout_weight="0.7" />
+
+                    <!-- 音量値 -->
+                    <TextView
+                        android:id="@+id/textView_volumeValue"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.1"
+                        android:text="" />
 
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:weightSum="1"
                     android:orientation="horizontal">
 
-                    <!-- パターン -->
-                    <TextView
-                        android:id="@+id/textView_pattern"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.2"
-                        android:text="パターン" />
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.4"
+                        android:orientation="vertical">
+                        <!-- パターン -->
+                        <TextView
+                            android:id="@+id/textView_pattern"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="パターン" />
+                    </LinearLayout>
 
-                    <!-- パターン -->
-                    <Spinner
-                        android:id="@+id/spinner_pattern"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:entries="@array/pattern"/>
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.6"
+                        android:orientation="vertical">
+                        <!-- パターン -->
+                        <Spinner
+                            android:id="@+id/spinner_pattern"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:entries="@array/pattern"/>
+
+                    </LinearLayout>
 
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:weightSum="1"
                     android:orientation="horizontal">
 
-                    <!-- スヌーズ -->
-                    <TextView
-                        android:id="@+id/textView_snooze"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.2"
-                        android:text="スヌーズ" />
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.4"
+                        android:orientation="vertical">
+                        <!-- アラーム解除方法 -->
+                        <TextView
+                            android:id="@+id/textView_release"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="アラーム解除" />
+                    </LinearLayout>
 
-                    <!-- 間隔 -->
-                    <TextView
-                        android:id="@+id/textView_interval"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.2"
-                        android:text="間隔" />
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.6"
+                        android:orientation="vertical">
+                        <!-- アラーム解除方法 -->
+                        <Spinner
+                            android:id="@+id/spinner_release"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:entries="@array/release"/>
 
-                    <!-- 間隔 -->
-                    <Spinner
-                        android:id="@+id/spinner_interval"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.2"
-                        android:entries="@array/interval"/>
-
-                    <!-- 回数 -->
-                    <TextView
-                        android:id="@+id/textView_times"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.2"
-                        android:text="回数" />
-
-                    <!-- 回数 -->
-                    <Spinner
-                        android:id="@+id/spinner_times"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.2"
-                        android:entries="@array/times"/>
+                    </LinearLayout>
 
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:weightSum="1"
                     android:orientation="horizontal">
 
-                    <!-- マナーモード -->
-                    <TextView
-                        android:id="@+id/textView_mannerMode"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
                         android:layout_weight="0.2"
-                        android:text="マナーモード" />
+                        android:orientation="vertical">
+                        <!-- スヌーズ -->
+                        <TextView
+                            android:id="@+id/textView_snooze"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.2"
+                            android:text="スヌーズ" />
+                    </LinearLayout>
 
-                    <!-- マナーモード -->
-                    <Spinner
-                        android:id="@+id/spinner_mannerMode"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
                         android:layout_weight="0.2"
-                        android:entries="@array/mannerMode"/>
+                        android:orientation="vertical">
+                        <!-- 間隔 -->
+                        <TextView
+                            android:id="@+id/textView_interval"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.2"
+                            android:text="間隔" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.2"
+                        android:orientation="vertical">
+                        <!-- 間隔 -->
+                        <Spinner
+                            android:id="@+id/spinner_interval"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.2"
+                            android:entries="@array/interval"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.2"
+                        android:orientation="vertical">
+                        <!-- 回数 -->
+                        <TextView
+                            android:id="@+id/textView_times"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.2"
+                            android:text="回数" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.2"
+                        android:orientation="vertical">
+                        <!-- 回数 -->
+                        <Spinner
+                            android:id="@+id/spinner_times"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.2"
+                            android:entries="@array/times"/>
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:weightSum="1"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.4"
+                        android:orientation="vertical">
+                        <!-- マナーモード -->
+                        <TextView
+                            android:id="@+id/textView_mannerMode"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.2"
+                            android:text="マナーモード" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.6"
+                        android:orientation="vertical">
+                        <!-- マナーモード -->
+                        <Spinner
+                            android:id="@+id/spinner_mannerMode"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.2"
+                            android:entries="@array/mannerMode"/>
+                    </LinearLayout>
                 </LinearLayout>
 
                 <LinearLayout
@@ -272,7 +372,9 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="月" />
+                        android:textOn="月"
+                        android:textOff="月"
+                        android:disabledAlpha="0.1"/>
 
                     <!-- 火 -->
                     <ToggleButton
@@ -280,7 +382,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="火" />
+                        android:textOn="火"
+                        android:textOff="火"/>
 
                     <!-- 水 -->
                     <ToggleButton
@@ -288,7 +391,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="水" />
+                        android:textOn="水"
+                        android:textOff="水"/>
 
                     <!-- 木 -->
                     <ToggleButton
@@ -296,7 +400,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="木" />
+                        android:textOn="木"
+                        android:textOff="木"/>
 
                     <!-- 金 -->
                     <ToggleButton
@@ -304,7 +409,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="金" />
+                        android:textOn="金"
+                        android:textOff="金"/>
 
                     <!-- 土 -->
                     <ToggleButton
@@ -312,7 +418,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="土" />
+                        android:textOn="土"
+                        android:textOff="土"/>
 
                     <!-- 日 -->
                     <ToggleButton
@@ -320,7 +427,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="日" />
+                        android:textOn="日"
+                        android:textOff="日"/>
                 </LinearLayout>
             </LinearLayout>
 
