@@ -51,6 +51,7 @@ public class AlarmActivity extends AppCompatActivity {
 
         private AlarmActivity mActivity = null;
     }
+
     private RingerModeReceiver mRingerModeReceiver;
 
     @Override
@@ -91,6 +92,7 @@ public class AlarmActivity extends AppCompatActivity {
         });
 
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        // TODO : ソフトキーボードで決定押したとき回答扱いにする
 
         mRingerModeReceiver = new RingerModeReceiver();
         mRingerModeReceiver.setAlarmActivity(this);
@@ -121,7 +123,7 @@ public class AlarmActivity extends AppCompatActivity {
 
     void onInit(Context context, int alarmID) {
         if (alarmID == 0) {
-            // TODO : DBが使えるようになったらこっちのパスは消す
+            // TODO : 以下はテストコード。DBが使えるようになったらこっちのパスは消す。
             mAlarmEntity = new AlarmEntity();
             mAlarmEntity.setAlarmName("アラームテスト");
             mAlarmEntity.setStopMode(STOP_MODE_TAP);
@@ -168,13 +170,12 @@ public class AlarmActivity extends AppCompatActivity {
             mMediaPlayer.setLooping(true);
             mMediaPlayer.setVolume(volume, volume);
             mMediaPlayer.prepare();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             Log.d("AlarmActivity", e.getMessage());
         }
 
         // バイブレーション
-        mVibrator = (Vibrator)getSystemService(VIBRATOR_SERVICE);
+        mVibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
 
         // 再生
         updateAlarm();
@@ -232,7 +233,7 @@ public class AlarmActivity extends AppCompatActivity {
         boolean playSound = false;
         boolean playVibration = false;
         if (mAlarmEntity.getManorMode() == MANOR_MODE_FOLLOW_OS) {
-            AudioManager audioManager = (AudioManager)getSystemService(AUDIO_SERVICE);
+            AudioManager audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
             int ringerMode = audioManager.getRingerMode();
             switch (ringerMode) {
                 case AudioManager.RINGER_MODE_SILENT:
@@ -248,8 +249,7 @@ public class AlarmActivity extends AppCompatActivity {
                     playVibration = false;
                     break;
             }
-        }
-        else {
+        } else {
             playSound = true;
             playVibration = false;
         }
@@ -258,8 +258,7 @@ public class AlarmActivity extends AppCompatActivity {
             if (mMediaPlayer.isPlaying() == false) {
                 mMediaPlayer.start();
             }
-        }
-        else {
+        } else {
             if (mMediaPlayer.isPlaying()) {
                 mMediaPlayer.pause();
             }
@@ -268,8 +267,7 @@ public class AlarmActivity extends AppCompatActivity {
         if (playVibration) {
             long vibratePattern[] = {500, 500};
             mVibrator.vibrate(vibratePattern, 0);
-        }
-        else {
+        } else {
             mVibrator.cancel();
         }
 
