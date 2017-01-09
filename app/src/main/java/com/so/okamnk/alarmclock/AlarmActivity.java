@@ -1,13 +1,18 @@
 package com.so.okamnk.alarmclock;
 
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -16,7 +21,8 @@ import android.widget.TextView;
 
 import com.so.okamnk.alarmclock.util.AlarmDBAdapter;
 import com.so.okamnk.alarmclock.util.AlarmEntity;
-import com.so.okamnk.alarmclock.util.AlarmMediaPlayer;
+
+import java.io.IOException;
 
 public class AlarmActivity extends AppCompatActivity {
     private TextView mTextAlarmName;
@@ -25,14 +31,27 @@ public class AlarmActivity extends AppCompatActivity {
     private Button mButtonPass;
     private Button mButtonAnswer;
 
-    AlarmEntity.STOP_MODE mStopMode;
-    private Question mQuestion;
+    private AlarmEntity mAlarmEntity;
 
-    private AlarmMediaPlayer mMediaPlayer;
+    private Question mQuestion;
+    private MediaPlayer mMediaPlayer;
     private Vibrator mVibrator;
-    private int mVolume;
-    AlarmEntity.SOUND_MODE mSoundMode;
-    AlarmEntity.MANOR_MODE mManorMode;
+
+    private class RingerModeReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (mActivity != null) {
+                mActivity.updateAlarm();
+            }
+        }
+
+        private void setAlarmActivity(AlarmActivity activity) {
+            mActivity = activity;
+        }
+
+        private AlarmActivity mActivity = null;
+    }
+    private RingerModeReceiver mRingerModeReceiver;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -73,45 +92,51 @@ public class AlarmActivity extends AppCompatActivity {
 
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
 
-        // TODO : onInitは誰が呼ぶ？alaramIDは誰が渡してくる？
+        mRingerModeReceiver = new RingerModeReceiver();
+        mRingerModeReceiver.setAlarmActivity(this);
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction("android.media.RINGER_MODE_CHANGED");
+        registerReceiver(mRingerModeReceiver, intentFilter);
+
         // TODO : プレビューの時どうやってデータ受けとる？
-        onInit(getApplicationContext(), 0);
+        Intent intent = getIntent();
+        boolean isPreview = intent.getBooleanExtra("isPreview", false);
+        int alarmID = intent.getIntExtra("alarmID", 0);
+        onInit(getApplicationContext(), alarmID);
     }
 
-    void onInit(Context context, int alarmID) {
-        // アラーム情報
-        String alarmName = "アラーム名";
-        AlarmEntity.STOP_MODE stopMode = AlarmEntity.STOP_MODE.TAP;
-        String soundPath = "";
-        AlarmEntity.SOUND_MODE soundMode = AlarmEntity.SOUND_MODE.NORMAL;
-        int soundVolume = 1;
-        AlarmEntity.MANOR_MODE manorMode = AlarmEntity.MANOR_MODE.FOLLOW_OS;
+    @Override
+    protected void onDestroy() {
+        unregisterReceiver(mRingerModeReceiver);
+        super.onDestroy();
+    }
 
-        if (alarmID == 0) {     // TODO : DBが使えるようになったらこっちのパスは消す
-            alarmName = "アラームテスト";
-            stopMode = AlarmEntity.STOP_MODE.TAP;
-            soundPath = "";
-            soundMode = AlarmEntity.SOUND_MODE.NORMAL;
-            manorMode = AlarmEntity.MANOR_MODE.FOLLOW_OS;
+    // TODO : AlarmEntity側で定義してもらいたい
+    static final int STOP_MODE_TAP = 0;
+    static final int STOP_MODE_ADDITION = 1;
+    static final int SOUND_MODE_NORMAL = 0;
+    static final int SOUND_MODE_LARGE_SLOWLY = 1;
+    static final int MANOR_MODE_FOLLOW_OS = 0;
+    static final int MANOR_MODE_INDEPENDENT = 1;
+
+    void onInit(Context context, int alarmID) {
+        if (alarmID == 0) {
+            // TODO : DBが使えるようになったらこっちのパスは消す
+            mAlarmEntity = new AlarmEntity();
+            mAlarmEntity.setAlarmName("アラームテスト");
+            mAlarmEntity.setStopMode(STOP_MODE_TAP);
+            mAlarmEntity.setSoundPath("/storage/emulated/0/Music/eine.mp3");
+            mAlarmEntity.setSoundMode(SOUND_MODE_NORMAL);
+            mAlarmEntity.setSoundVolume(100);
+            mAlarmEntity.setManorMode(MANOR_MODE_FOLLOW_OS);
         } else {
             AlarmDBAdapter db = new AlarmDBAdapter(context);
-            AlarmEntity alarmEntity = db.getAlarm(alarmID);
-            alarmEntity.getAlarmName();
-
-            alarmName = alarmEntity.getAlarmName();
-            //stopMode = alarmEntity.getStopMode();         // TODO : enum型にしてもらう
-            soundPath = alarmEntity.getSoundPath();
-            //soundMode = alarmEntity.getSoundMode();       // TODO : enum型にしてもらう
-            soundVolume = alarmEntity.getSoundVolume();
-            //manorMode = alarmEntity.getManorMode();       // TODO : enum型にしてもらう
+            mAlarmEntity = db.getAlarm(alarmID);
         }
 
-
-        mStopMode = stopMode;
-
-        // コントロール
-        mTextAlarmName.setText(alarmName);
-        if (mStopMode == AlarmEntity.STOP_MODE.ADDITION) {
+        // 問題とコントロール
+        mTextAlarmName.setText(mAlarmEntity.getAlarmName());
+        if (mAlarmEntity.getStopMode() == STOP_MODE_ADDITION) {
             mQuestion = Question.createRandomQuestion();
 
             mTextQuestion.setText(mQuestion.getQuestionString());
@@ -133,8 +158,26 @@ public class AlarmActivity extends AppCompatActivity {
             mButtonPass.setVisibility(View.GONE);
         }
 
+        // サウンド
+        mMediaPlayer = new MediaPlayer();
+        try {
+            float volume = mAlarmEntity.getSoundVolume() / 100.0f;
+
+            mMediaPlayer.setDataSource(mAlarmEntity.getSoundPath());
+            mMediaPlayer.setAudioStreamType(AudioManager.STREAM_ALARM);
+            mMediaPlayer.setLooping(true);
+            mMediaPlayer.setVolume(volume, volume);
+            mMediaPlayer.prepare();
+        }
+        catch (IOException e) {
+            Log.d("AlarmActivity", e.getMessage());
+        }
+
+        // バイブレーション
+        mVibrator = (Vibrator)getSystemService(VIBRATOR_SERVICE);
+
         // 再生
-        playAlarm();
+        updateAlarm();
     }
 
     void onPass() {
@@ -148,12 +191,17 @@ public class AlarmActivity extends AppCompatActivity {
         stopAlarm();
 
         Intent intent = new Intent(getApplicationContext(), SnoozeActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);      // TODO : 落ちる？
+        intent.putExtra("alarmID", mAlarmEntity.getAlarmId());
+        startActivity(intent);
+
+        // この画面にはもう戻れないように終了させる
+        finish();
+
+        // TODO : プレビューの時もスヌーズ画面に遷移していいの？
     }
 
     void onAnswer() {
-        if (mStopMode == AlarmEntity.STOP_MODE.ADDITION) {
+        if (mAlarmEntity.getStopMode() == STOP_MODE_ADDITION) {
             String answer = mEditAnswer.getText().toString();
 
             if (mQuestion.isCorrectAnswer(answer)) {
@@ -176,31 +224,63 @@ public class AlarmActivity extends AppCompatActivity {
         }
     }
 
-
     /**
-     * アラームを再生する。
-     * マナーモード変更があった場合は本メソッドを呼び出すことで、再生内容が更新される。
+     * アラーム再生状態を更新する。
      */
-    private void playAlarm() {
-        // 現在の状態
-        boolean isPlayingSound = false;
-        boolean isPlayingVibration = false;
+    private void updateAlarm() {
+        // 再生するかどうかを計算
+        boolean playSound = false;
+        boolean playVibration = false;
+        if (mAlarmEntity.getManorMode() == MANOR_MODE_FOLLOW_OS) {
+            AudioManager audioManager = (AudioManager)getSystemService(AUDIO_SERVICE);
+            int ringerMode = audioManager.getRingerMode();
+            switch (ringerMode) {
+                case AudioManager.RINGER_MODE_SILENT:
+                    playSound = false;
+                    playVibration = false;
+                    break;
+                case AudioManager.RINGER_MODE_VIBRATE:
+                    playSound = false;
+                    playVibration = true;
+                    break;
+                case AudioManager.RINGER_MODE_NORMAL:
+                    playSound = true;
+                    playVibration = false;
+                    break;
+            }
+        }
+        else {
+            playSound = true;
+            playVibration = false;
+        }
 
-        // 再生するべきかどうか
-        boolean shouldPlaySound = false;
-        boolean shouldPlayVibration = false;
+        if (playSound) {
+            if (mMediaPlayer.isPlaying() == false) {
+                mMediaPlayer.start();
+            }
+        }
+        else {
+            if (mMediaPlayer.isPlaying()) {
+                mMediaPlayer.pause();
+            }
+        }
 
-        // mMediaPlayer = AlarmMediaPlayer.getInstance();
-        // mMediaPlayer.play(soundPath);
+        if (playVibration) {
+            long vibratePattern[] = {500, 500};
+            mVibrator.vibrate(vibratePattern, 0);
+        }
+        else {
+            mVibrator.cancel();
+        }
 
-        // 徐々に音量アップはタイマーイベントでやるっぽい。
-
+        // TODO : 徐々に音量アップはタイマーイベントでやるっぽい。
     }
 
     /**
      * アラームを停止する
      */
     private void stopAlarm() {
-
+        mMediaPlayer.stop();
+        mVibrator.cancel();
     }
 }
