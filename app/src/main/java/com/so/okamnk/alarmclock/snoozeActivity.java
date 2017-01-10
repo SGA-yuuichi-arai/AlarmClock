@@ -2,48 +2,37 @@ package com.so.okamnk.alarmclock;
 
 import android.app.Activity;
 import android.icu.text.IDNA;
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+
+import java.util.Calendar;
 
 /**
  * Created by masa nomoto on 2016/11/21.
  */
 
-public class SnoozeActivity extends Activity{
+public class SnoozeActivity extends AppCompatActivity {
 
-    public String caluculation;
-    public int answer;
+    Question question;
 
-    private String getAlert(String id) {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-        String ret = "TRUE";
-        return ret;
+        question = Question.createRandomQuestion();
     }
 
-    private void setAlert(String Class) {
 
+    private String getFormatingNowTime(Calendar calendar) {
+        return calendar.get(Calendar.HOUR) + "時" + calendar.get(Calendar.MINUTE) + "分";
     }
 
-    private String getCaluculation() {
-
-        String ret = "TRUE";
-        return ret;
+    private String getFormatingRemainingTime(){
+        return "あと00分00秒";
     }
 
-    private void answerVerify(String caluculation, int answer) {
-
-    }
-
-    private void alert() {
-
-    }
-
-    private String getReCaluculation() {
-
-        String ret = "TRUE";
-        return ret;
-    }
-
-    private void transSnooze() {
-
+    private String getFormatingQuestion(int firstNum, int secondNum){
+        return firstNum + "+" + secondNum + "=";
     }
 
 }
