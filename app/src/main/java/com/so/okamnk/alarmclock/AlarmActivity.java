@@ -9,12 +9,16 @@ import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.Vibrator;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -36,6 +40,9 @@ public class AlarmActivity extends AppCompatActivity {
     private Question mQuestion;
     private MediaPlayer mMediaPlayer;
     private Vibrator mVibrator;
+
+    private Handler mVolumeChanger;
+    private float mVolume;            // 徐々に音量を上げるときに使う
 
     private class RingerModeReceiver extends BroadcastReceiver {
         @Override
@@ -92,7 +99,19 @@ public class AlarmActivity extends AppCompatActivity {
         });
 
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
-        // TODO : ソフトキーボードで決定押したとき回答扱いにする
+
+        // ソフトキーボードで決定押したとき回答扱いにする
+        mEditAnswer.setOnKeyListener(new View.OnKeyListener() {
+                 @Override
+                 public boolean onKey(View v, int keyCode, KeyEvent event) {
+                     if((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)){
+                         onAnswer();
+                         return true;
+                     }
+                     return false;
+                 }
+             }
+        );
 
         mRingerModeReceiver = new RingerModeReceiver();
         mRingerModeReceiver.setAlarmActivity(this);
@@ -110,6 +129,9 @@ public class AlarmActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         unregisterReceiver(mRingerModeReceiver);
+        if (mVolumeChanger != null) {
+            mVolumeChanger.removeCallbacksAndMessages(null);
+        }
         super.onDestroy();
     }
 
@@ -126,10 +148,10 @@ public class AlarmActivity extends AppCompatActivity {
             // TODO : 以下はテストコード。DBが使えるようになったらこっちのパスは消す。
             mAlarmEntity = new AlarmEntity();
             mAlarmEntity.setAlarmName("アラームテスト");
-            mAlarmEntity.setStopMode(STOP_MODE_TAP);
+            mAlarmEntity.setStopMode(STOP_MODE_ADDITION);
             mAlarmEntity.setSoundPath("/storage/emulated/0/Music/eine.mp3");
-            mAlarmEntity.setSoundMode(SOUND_MODE_NORMAL);
-            mAlarmEntity.setSoundVolume(100);
+            mAlarmEntity.setSoundMode(SOUND_MODE_LARGE_SLOWLY);
+            mAlarmEntity.setSoundVolume(50);
             mAlarmEntity.setManorMode(MANOR_MODE_FOLLOW_OS);
         } else {
             AlarmDBAdapter db = new AlarmDBAdapter(context);
@@ -163,12 +185,12 @@ public class AlarmActivity extends AppCompatActivity {
         // サウンド
         mMediaPlayer = new MediaPlayer();
         try {
-            float volume = mAlarmEntity.getSoundVolume() / 100.0f;
+            mVolume = mAlarmEntity.getSoundVolume() / 100.0f;
 
             mMediaPlayer.setDataSource(mAlarmEntity.getSoundPath());
             mMediaPlayer.setAudioStreamType(AudioManager.STREAM_ALARM);
             mMediaPlayer.setLooping(true);
-            mMediaPlayer.setVolume(volume, volume);
+            mMediaPlayer.setVolume(mVolume, mVolume);
             mMediaPlayer.prepare();
         } catch (IOException e) {
             Log.d("AlarmActivity", e.getMessage());
@@ -176,6 +198,27 @@ public class AlarmActivity extends AppCompatActivity {
 
         // バイブレーション
         mVibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
+
+        // 音量徐々に大きくする
+        if (mAlarmEntity.getSoundMode() == SOUND_MODE_LARGE_SLOWLY) {
+            mVolumeChanger = new Handler(Looper.getMainLooper());
+
+            final int DELAY_MS = 4000;
+            mVolumeChanger.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    mVolume += 0.05f;
+                    if (mVolume > 1.0f) {
+                        mVolume = 1.0f;
+                    }
+                    mMediaPlayer.setVolume(mVolume, mVolume);
+                    mVolumeChanger.postDelayed(this, DELAY_MS);
+                }
+            }, DELAY_MS);
+        }
+        else {
+            mVolumeChanger = null;
+        }
 
         // 再生
         updateAlarm();
@@ -270,8 +313,6 @@ public class AlarmActivity extends AppCompatActivity {
         } else {
             mVibrator.cancel();
         }
-
-        // TODO : 徐々に音量アップはタイマーイベントでやるっぽい。
     }
 
     /**
