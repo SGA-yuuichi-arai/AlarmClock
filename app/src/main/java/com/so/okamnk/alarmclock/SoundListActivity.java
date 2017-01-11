@@ -1,6 +1,7 @@
 package com.so.okamnk.alarmclock;
 
 import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Intent;
 import android.database.ContentObservable;
@@ -125,11 +126,29 @@ public class SoundListActivity extends Activity{
 
     private void getMusicList(){
 
-        //ミュージックリストから取得
-        //ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, id);
+        //ContentResolverクラスのインスタンスを作成
+        ContentResolver resolver = getContentResolver();
+
+        //ミュージックリストを取得
+        Cursor cursor = resolver.query(
+                        MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                        new String[]{
+                            MediaStore.Audio.Media.ALBUM,
+                            MediaStore.Audio.Media.ARTIST,
+                            MediaStore.Audio.Media.TITLE},
+                            null,
+                            null,
+                            null
+                        );
 
         //リストビューをクリア
         adapter.clear();
+
+        //ミュージックリストの出力
+        while(cursor.moveToNext()) {
+            //リストビューにミュージックタイトルを出力
+            adapter.add(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE)));
+        }
     }
 
     private void playSound(int pos){
@@ -168,21 +187,28 @@ public class SoundListActivity extends Activity{
 
         RingtoneManager.setActualDefaultRingtoneUri(getApplicationContext(),RingtoneManager.TYPE_RINGTONE,uri);
 
+        //アクティビティを終了させて前の画面に戻る
+        finish();
+
         //アラーム登録画面に戻る
-        Intent intent = new Intent();
-        intent.setClassName("com.so.okamnk.alarmclock","com.so.okamnk.alarmclock.AlarmRegistActivity");
+        //Intent intent = new Intent();
+        //intent.setClassName("com.so.okamnk.alarmclock","com.so.okamnk.alarmclock.AlarmRegistActivity");
 
         //アラーム登録画面に遷移
-        startActivity(intent);
+        //startActivity(intent);
     }
 
     public void onClickCancelButton (View view) {
+
+        //アクティビティを終了させて前の画面に戻る
+        finish();
+
         //何もせずアラーム登録画面に戻る
-        Intent intent = new Intent();
-        intent.setClassName("com.so.okamnk.alarmclock","com.so.okamnk.alarmclock.AlarmRegistActivity");
+        //Intent intent = new Intent();
+        //intent.setClassName("com.so.okamnk.alarmclock","com.so.okamnk.alarmclock.AlarmRegistActivity");
 
         //アラーム登録画面に遷移
-        startActivity(intent);
+        //startActivity(intent);
     }
 
 }
