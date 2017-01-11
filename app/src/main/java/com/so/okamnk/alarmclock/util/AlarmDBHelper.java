@@ -41,7 +41,7 @@ public class AlarmDBHelper extends SQLiteOpenHelper {
             createSql.append(AlarmDBAdapter.COL_REPEAT_FRIDAY + " integer" + " check(" + AlarmDBAdapter.COL_REPEAT_FRIDAY + " IN (0, 1)) " + ", ");
             createSql.append(AlarmDBAdapter.COL_REPEAT_SATURDAY + " integer" + " check(" + AlarmDBAdapter.COL_REPEAT_SATURDAY + " IN (0, 1)) " + ", ");
             createSql.append(AlarmDBAdapter.COL_REPEAT_SUNDAY + " integer" + " check(" + AlarmDBAdapter.COL_REPEAT_SUNDAY + " IN (0, 1)) " + ", ");
-            createSql.append(AlarmDBAdapter.COL_ALARM_ENABLED + " integer" + " check(" + AlarmDBAdapter.COL_ALARM_ENABLED + " IN (0, 1)) " + "not null, ");
+            createSql.append(AlarmDBAdapter.COL_ALARM_ENABLED + " integer" + " check(" + AlarmDBAdapter.COL_ALARM_ENABLED + " IN (0, 1)) " + "not null ");
             createSql.append(");");
             db.execSQL(createSql.toString());
             db.setTransactionSuccessful();

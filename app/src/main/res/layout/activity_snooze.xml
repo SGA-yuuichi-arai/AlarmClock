@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal">
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.28" />
+
+    <TextView
+        android:text="nowTime"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/text_nowTime"
+        android:textSize="30sp"
+        android:gravity="center_vertical|center_horizontal" />
+
+    <TextView
+        android:text="remainingTime"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/text_remainingTime"
+        android:textSize="30sp"
+        android:gravity="center_vertical|center_horizontal" />
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.77" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:text="question"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:id="@+id/text_question"
+            android:layout_weight="0.27"
+            android:textSize="32sp"
+            android:gravity="right|center_vertical" />
+
+        <EditText
+            android:text=""
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:inputType="numberDecimal"
+            android:ems="5"
+            android:id="@+id/edit_answer"
+            android:textSize="24sp"
+            android:layout_weight="0.24"
+            android:gravity="left|center_vertical"
+            android:maxLength="5" />
+
+    </LinearLayout>
+
+    <Button
+        android:text="問題のパス"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/button_pass"
+        android:textSize="20sp"
+        android:gravity="center_vertical|center_horizontal" />
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.75" />
+
+    <Button
+        android:text="停止"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/button_stop"
+        android:textSize="20sp"
+        android:gravity="center_vertical|center_horizontal" />
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.20" />
+
+</LinearLayout>
