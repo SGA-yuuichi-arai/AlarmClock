@@ -17,10 +17,21 @@ import com.so.okamnk.alarmclock.util.AlarmEntity;
 
 public class AlarmListAdapter extends ArrayAdapter<AlarmEntity> {
 
-    LayoutInflater inflater;
+    public interface OnAlarmListAdapterListener {
+        void onClickEdit(AlarmEntity entity);
 
-    public AlarmListAdapter(Context context) {
+        void onClickDelete(AlarmEntity entity);
+
+        void onClickPreview(AlarmEntity entity);
+    }
+
+    private LayoutInflater inflater;
+    private OnAlarmListAdapterListener listener;
+
+    public AlarmListAdapter(Context context, OnAlarmListAdapterListener listener) {
         super(context, R.layout.alarm_list_item);
+
+        this.listener = listener;
 
         inflater = LayoutInflater.from(context);
     }
@@ -30,7 +41,7 @@ public class AlarmListAdapter extends ArrayAdapter<AlarmEntity> {
         if (v == null) {
             v = inflater.inflate(R.layout.alarm_list_item, vg, false);
         }
-        AlarmEntity entity = getItem(position);
+        final AlarmEntity entity = getItem(position);
 
         ToggleButton enabledButton = (ToggleButton) v.findViewById(R.id.enabled_button);
         TextView alarmNameText = (TextView) v.findViewById(R.id.alarm_name_text);
@@ -62,6 +73,9 @@ public class AlarmListAdapter extends ArrayAdapter<AlarmEntity> {
             @Override
             public void onClick(View view) {
 
+                if (listener != null) {
+                    listener.onClickEdit(entity);
+                }
             }
         });
 
@@ -69,6 +83,9 @@ public class AlarmListAdapter extends ArrayAdapter<AlarmEntity> {
             @Override
             public void onClick(View view) {
 
+                if (listener != null) {
+                    listener.onClickDelete(entity);
+                }
             }
         });
 
@@ -76,6 +93,9 @@ public class AlarmListAdapter extends ArrayAdapter<AlarmEntity> {
             @Override
             public void onClick(View view) {
 
+                if (listener != null) {
+                    listener.onClickPreview(entity);
+                }
             }
         });
         return v;

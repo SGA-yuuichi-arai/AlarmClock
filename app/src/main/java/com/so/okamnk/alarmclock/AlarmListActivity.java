@@ -1,14 +1,19 @@
 package com.so.okamnk.alarmclock;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.ListView;
 
 import com.so.okamnk.alarmclock.util.AlarmDBAdapter;
 import com.so.okamnk.alarmclock.util.AlarmEntity;
+import com.so.okamnk.alarmclock.util.AlarmRegistHelper;
 
 import java.util.ArrayList;
+
 
 public class AlarmListActivity extends AppCompatActivity {
 
@@ -23,9 +28,64 @@ public class AlarmListActivity extends AppCompatActivity {
 
         if (savedInstanceState == null) {
             listView = (ListView) findViewById(R.id.alarm_list);
+
+            ImageButton addButton = (ImageButton) findViewById(R.id.add_button);
+            addButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(getApplicationContext(), AlarmRegistActivity.class);
+                    intent.putExtra("isEditable", false);
+                    startActivity(intent);
+                }
+            });
         }
 
-        adapter = new AlarmListAdapter(getApplicationContext());
+        adapter = new AlarmListAdapter(getApplicationContext(), new AlarmListAdapter.OnAlarmListAdapterListener() {
+            @Override
+            public void onClickEdit(AlarmEntity entity) {
+
+                Intent intent = new Intent(getApplicationContext(), AlarmRegistActivity.class);
+                intent.putExtra("isEditable", true);
+                startActivity(intent);
+
+            }
+
+            @Override
+            public void onClickDelete(AlarmEntity entity) {
+
+                AlarmDBAdapter dbAdapter = new AlarmDBAdapter(getApplicationContext());
+                try {
+                    dbAdapter.deleteAlarm(entity.getAlarmId());
+                    AlarmRegistHelper registHelper = AlarmRegistHelper.getInstance();
+                    ArrayList alarmEntities = new ArrayList();
+                    alarmEntities.add(entity);
+                    registHelper.unregistAsync(getApplicationContext(), alarmEntities, new AlarmRegistHelper.OnAlarmRegistHelperListener() {
+                        @Override
+                        public void onRegistration(int alarmID, AlarmRegistHelper.RegistReturnCode returnCode) {
+
+                        }
+
+                        @Override
+                        public void onCompletion() {
+                            listUpdate();
+                        }
+                    });
+                } catch (RuntimeException e) {
+
+                }
+
+            }
+
+            @Override
+            public void onClickPreview(AlarmEntity entity) {
+
+                Intent intent = new Intent(getApplicationContext(), AlarmActivity.class);
+                intent.putExtra("isPreview", true);
+                // AlarmEntityがシリアライズ対応したらIntentにputする
+                startActivity(intent);
+            }
+        });
+
         entities = new ArrayList<>();
         listView.setAdapter(adapter);
     }
@@ -34,55 +94,17 @@ public class AlarmListActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        AlarmDBAdapter dbAdapter = new AlarmDBAdapter(getApplicationContext());
-//        entities.addAll(dbAdapter.getAll());
+        listUpdate();
+    }
 
-        // test
+    private void listUpdate() {
+        AlarmDBAdapter dbAdapter = new AlarmDBAdapter(getApplicationContext());
+
         entities.clear();
-        entities.add(new AlarmEntity(0, "2016/12/17/20:23", "test", "20:27", "/tmp/test", 0,
-                100, 0, 0, 0, 3, true,
-                false, false, false, false,
-                false, false, true));
-        entities.add(new AlarmEntity(1, "2016/12/17/20:23", "test2", "20:27", "/tmp/test2", 0,
-                100, 0, 0, 0, 3, true,
-                true, false, false, false,
-                false, false, true));
-        entities.add(new AlarmEntity(0, "2016/12/17/20:23", "test", "20:27", "/tmp/test", 0,
-                100, 0, 0, 0, 3, true,
-                false, false, false, false,
-                false, false, true));
-        entities.add(new AlarmEntity(1, "2016/12/17/20:23", "test2", "20:27", "/tmp/test2", 0,
-                100, 0, 0, 0, 3, true,
-                true, false, false, false,
-                false, false, true));
-        entities.add(new AlarmEntity(0, "2016/12/17/20:23", "test", "20:27", "/tmp/test", 0,
-                100, 0, 0, 0, 3, true,
-                false, false, false, false,
-                false, false, true));
-        entities.add(new AlarmEntity(1, "2016/12/17/20:23", "test2", "20:27", "/tmp/test2", 0,
-                100, 0, 0, 0, 3, true,
-                true, false, false, false,
-                false, false, true));
-        entities.add(new AlarmEntity(0, "2016/12/17/20:23", "test", "20:27", "/tmp/test", 0,
-                100, 0, 0, 0, 3, true,
-                false, false, false, false,
-                false, false, true));
-        entities.add(new AlarmEntity(1, "2016/12/17/20:23", "test2", "20:27", "/tmp/test2", 0,
-                100, 0, 0, 0, 3, true,
-                true, false, false, false,
-                false, false, true));
-        entities.add(new AlarmEntity(0, "2016/12/17/20:23", "test", "20:27", "/tmp/test", 0,
-                100, 0, 0, 0, 3, true,
-                false, false, false, false,
-                false, false, true));
-        entities.add(new AlarmEntity(1, "2016/12/17/20:23", "test2", "20:27", "/tmp/test2", 0,
-                100, 0, 0, 0, 3, true,
-                true, false, false, false,
-                false, false, true));
+        entities.addAll(dbAdapter.getAll());
 
         adapter.clear();
         adapter.addAll(entities);
         adapter.notifyDataSetChanged();
-
     }
 }

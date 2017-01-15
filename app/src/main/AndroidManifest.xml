@@ -19,6 +19,7 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".AlarmRegistActivity" />
         <activity android:name=".AlarmActivity" />
 
         <service android:name=".AlarmService"></service>
@@ -31,7 +32,7 @@
         <receiver android:name=".receiver.PackageReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
-                <action android:name="android.intent.action.PACKAGE_FULLY_REMOVED"/>
+                <action android:name="android.intent.action.PACKAGE_FULLY_REMOVED" />
             </intent-filter>
         </receiver>
     </application>

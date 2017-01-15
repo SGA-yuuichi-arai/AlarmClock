@@ -27,7 +27,7 @@ public class AlarmRegistHelper {
         RET_ERROR_UNKNOWN
     }
 
-    interface OnAlarmRegistHelperListener {
+    public interface OnAlarmRegistHelperListener {
         void onRegistration(int alarmID, RegistReturnCode returnCode);
 
         void onCompletion();
