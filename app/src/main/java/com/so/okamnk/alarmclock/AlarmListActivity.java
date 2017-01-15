@@ -41,6 +41,24 @@ public class AlarmListActivity extends AppCompatActivity {
         }
 
         adapter = new AlarmListAdapter(getApplicationContext(), new AlarmListAdapter.OnAlarmListAdapterListener() {
+
+            @Override
+            public void onCheckedChangedAlarm(AlarmEntity entity, boolean isChecked) {
+
+                AlarmDBAdapter dbAdapter = new AlarmDBAdapter(getApplicationContext());
+                entity.setAlarmEnabled(isChecked);
+                dbAdapter.saveAlarm(entity);
+
+                AlarmRegistHelper registHelper = AlarmRegistHelper.getInstance();
+                ArrayList alarmEntities = new ArrayList();
+
+                if (isChecked) {
+                    registHelper.registAsync(getApplicationContext(), alarmEntities, null);
+                } else {
+                    registHelper.unregistAsync(getApplicationContext(), alarmEntities, null);
+                }
+            }
+
             @Override
             public void onClickEdit(AlarmEntity entity) {
 
@@ -48,6 +66,9 @@ public class AlarmListActivity extends AppCompatActivity {
                 intent.putExtra("isEditable", true);
                 startActivity(intent);
 
+                AlarmRegistHelper registHelper = AlarmRegistHelper.getInstance();
+                ArrayList alarmEntities = new ArrayList();
+                alarmEntities.add(entity);
             }
 
             @Override

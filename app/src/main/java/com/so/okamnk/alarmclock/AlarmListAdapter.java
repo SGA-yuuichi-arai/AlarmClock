@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.ToggleButton;
@@ -18,6 +19,8 @@ import com.so.okamnk.alarmclock.util.AlarmEntity;
 public class AlarmListAdapter extends ArrayAdapter<AlarmEntity> {
 
     public interface OnAlarmListAdapterListener {
+        void onCheckedChangedAlarm(AlarmEntity entity, boolean isChecked);
+
         void onClickEdit(AlarmEntity entity);
 
         void onClickDelete(AlarmEntity entity);
@@ -69,6 +72,14 @@ public class AlarmListAdapter extends ArrayAdapter<AlarmEntity> {
         ImageButton deleteButton = (ImageButton) v.findViewById(R.id.delete_button);
         ImageButton previewButton = (ImageButton) v.findViewById(R.id.preview_button);
 
+        enabledButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (listener != null) {
+                    listener.onCheckedChangedAlarm(entity, b);
+                }
+            }
+        });
         editButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
