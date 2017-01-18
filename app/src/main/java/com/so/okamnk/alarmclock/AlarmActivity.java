@@ -18,7 +18,6 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -102,15 +101,15 @@ public class AlarmActivity extends AppCompatActivity {
 
         // ソフトキーボードで決定押したとき回答扱いにする
         mEditAnswer.setOnKeyListener(new View.OnKeyListener() {
-                 @Override
-                 public boolean onKey(View v, int keyCode, KeyEvent event) {
-                     if((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)){
-                         onAnswer();
-                         return true;
-                     }
-                     return false;
-                 }
-             }
+                                         @Override
+                                         public boolean onKey(View v, int keyCode, KeyEvent event) {
+                                             if ((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
+                                                 onAnswer();
+                                                 return true;
+                                             }
+                                             return false;
+                                         }
+                                     }
         );
 
         mRingerModeReceiver = new RingerModeReceiver();
@@ -119,11 +118,18 @@ public class AlarmActivity extends AppCompatActivity {
         intentFilter.addAction("android.media.RINGER_MODE_CHANGED");
         registerReceiver(mRingerModeReceiver, intentFilter);
 
-        // TODO : プレビューの時どうやってデータ受けとる？
         Intent intent = getIntent();
         boolean isPreview = intent.getBooleanExtra("isPreview", false);
-        int alarmID = intent.getIntExtra("alarmID", 0);
-        onInit(getApplicationContext(), alarmID);
+        AlarmEntity alarmEntity = null;
+        if (isPreview) {
+            // TODO : AlarmEntityにシリアライズ機能が実装されたら動作確認する
+            alarmEntity = (AlarmEntity) intent.getSerializableExtra("alarmEntity");
+        } else {
+            int alarmID = intent.getIntExtra("alarmID", 0);
+            AlarmDBAdapter db = new AlarmDBAdapter(getApplicationContext());
+            alarmEntity = db.getAlarm(alarmID);
+        }
+        onInit(alarmEntity);
     }
 
     @Override
@@ -135,7 +141,7 @@ public class AlarmActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
-    // TODO : AlarmEntity側で定義してもらいたい
+    // TODO : AlarmEntity側で定義されたら消す
     static final int STOP_MODE_TAP = 0;
     static final int STOP_MODE_ADDITION = 1;
     static final int SOUND_MODE_NORMAL = 0;
@@ -143,20 +149,8 @@ public class AlarmActivity extends AppCompatActivity {
     static final int MANOR_MODE_FOLLOW_OS = 0;
     static final int MANOR_MODE_INDEPENDENT = 1;
 
-    void onInit(Context context, int alarmID) {
-        if (alarmID == 0) {
-            // TODO : 以下はテストコード。DBが使えるようになったらこっちのパスは消す。
-            mAlarmEntity = new AlarmEntity();
-            mAlarmEntity.setAlarmName("アラームテスト");
-            mAlarmEntity.setStopMode(STOP_MODE_ADDITION);
-            mAlarmEntity.setSoundPath("/storage/emulated/0/Music/eine.mp3");
-            mAlarmEntity.setSoundMode(SOUND_MODE_LARGE_SLOWLY);
-            mAlarmEntity.setSoundVolume(50);
-            mAlarmEntity.setManorMode(MANOR_MODE_FOLLOW_OS);
-        } else {
-            AlarmDBAdapter db = new AlarmDBAdapter(context);
-            mAlarmEntity = db.getAlarm(alarmID);
-        }
+    void onInit(AlarmEntity alarmEntity) {
+        mAlarmEntity = alarmEntity;
 
         // 問題とコントロール
         mTextAlarmName.setText(mAlarmEntity.getAlarmName());
@@ -215,8 +209,7 @@ public class AlarmActivity extends AppCompatActivity {
                     mVolumeChanger.postDelayed(this, DELAY_MS);
                 }
             }, DELAY_MS);
-        }
-        else {
+        } else {
             mVolumeChanger = null;
         }
 
@@ -240,8 +233,6 @@ public class AlarmActivity extends AppCompatActivity {
 
         // この画面にはもう戻れないように終了させる
         finish();
-
-        // TODO : プレビューの時もスヌーズ画面に遷移していいの？
     }
 
     void onAnswer() {
