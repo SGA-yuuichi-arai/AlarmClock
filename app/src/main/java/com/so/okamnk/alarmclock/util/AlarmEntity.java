@@ -1,10 +1,13 @@
 package com.so.okamnk.alarmclock.util;
 
+import java.io.Serializable;
+
 /**
  * Created by araiyuuichi on 2016/11/11.
  */
 
-public class AlarmEntity {
+public class AlarmEntity implements Serializable {
+    
     private int alarmId = 0;
     private String registDate = "";
     private String alarmName = "";
@@ -24,27 +27,6 @@ public class AlarmEntity {
     private boolean repeatFriday = false;
     private boolean repeatSaturday = false;
     private boolean alarmEnabled = false;
-
-    /**
-     * 音量パターンのEnum
-     */
-    public enum SOUND_MODE {
-        NORMAL, LARGE_SLOWLY;
-    }
-
-    /**
-     * マナーモードのEnum
-     */
-    public enum MANOR_MODE {
-        FOLLOW_OS, INDEPENDENT;
-    }
-
-    /**
-     * アラーム解除方法のEnum
-     */
-    public enum STOP_MODE {
-        TAP, ADDITION;
-    }
 
     /**
      * デフォルトコンストラクタ

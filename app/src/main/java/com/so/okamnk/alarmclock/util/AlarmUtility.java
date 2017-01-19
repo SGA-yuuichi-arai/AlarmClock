@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.so.okamnk.alarmclock.AlarmService;
+import com.so.okamnk.alarmclock.Define;
 
 /**
  * サービス開始/停止のユーティリティクラス
@@ -11,16 +12,14 @@ import com.so.okamnk.alarmclock.AlarmService;
  */
 
 public class AlarmUtility {
-    static Intent intent = null;
-    static Context context = null;
-
-    public static void startAlarmService(Context con, String path, int soundMode, int manorMode) {
-        intent = new Intent(con, AlarmService.class);
-        context = con;
+    public static void startAlarmService(Context context, int alarmId) {
+        Intent intent = new Intent(context, AlarmService.class);
+        intent.putExtra(Define.ALARM_ID_KEY, alarmId);
         context.startService(intent);
     }
 
-    public static void stopAlarmService() {
+    public static void stopAlarmService(Context context) {
+        Intent intent = new Intent(context, AlarmService.class);
         context.stopService(intent);
     }
 }

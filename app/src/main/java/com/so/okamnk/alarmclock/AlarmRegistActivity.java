@@ -25,7 +25,6 @@ import android.widget.ToggleButton;
 
 import com.so.okamnk.alarmclock.util.AlarmDBAdapter;
 import com.so.okamnk.alarmclock.util.AlarmEntity;
-import com.so.okamnk.alarmclock.util.AlarmEntity.STOP_MODE;
 import com.so.okamnk.alarmclock.util.AlarmRegistHelper;
 import com.so.okamnk.alarmclock.util.StringUtility;
 
@@ -227,7 +226,7 @@ public class AlarmRegistActivity extends AppCompatActivity implements View.OnCli
                 break;
 
             case R.id.imageButton_preview:
-                STOP_MODE stop_mode = STOP_MODE.values()[alarmEntity.getStopMode()];
+                int stop_mode = alarmEntity.getStopMode();
                 transitionToAlarmCancel(stop_mode, imageButton_preview);
                 break;
 
@@ -386,10 +385,10 @@ public class AlarmRegistActivity extends AppCompatActivity implements View.OnCli
      * プレビューを表示
      * アラーム解除画面へ遷移する
      *
-     * @param mode
+     * @param stopmode
      * @param v
      */
-    public void transitionToAlarmCancel(STOP_MODE mode, View v) {
+    public void transitionToAlarmCancel(int stopmode, View v) {
 
         startActivity(new Intent(AlarmRegistActivity.this, AlarmActivity.class));
 
