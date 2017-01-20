@@ -122,7 +122,6 @@ public class AlarmActivity extends AppCompatActivity {
         boolean isPreview = intent.getBooleanExtra("isPreview", false);
         AlarmEntity alarmEntity = null;
         if (isPreview) {
-            // TODO : AlarmEntityにシリアライズ機能が実装されたら動作確認する
             alarmEntity = (AlarmEntity) intent.getSerializableExtra("alarmEntity");
         } else {
             int alarmID = intent.getIntExtra("alarmID", 0);
@@ -141,20 +140,12 @@ public class AlarmActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
-    // TODO : AlarmEntity側で定義されたら消す
-    static final int STOP_MODE_TAP = 0;
-    static final int STOP_MODE_ADDITION = 1;
-    static final int SOUND_MODE_NORMAL = 0;
-    static final int SOUND_MODE_LARGE_SLOWLY = 1;
-    static final int MANOR_MODE_FOLLOW_OS = 0;
-    static final int MANOR_MODE_INDEPENDENT = 1;
-
     void onInit(AlarmEntity alarmEntity) {
         mAlarmEntity = alarmEntity;
 
         // 問題とコントロール
         mTextAlarmName.setText(mAlarmEntity.getAlarmName());
-        if (mAlarmEntity.getStopMode() == STOP_MODE_ADDITION) {
+        if (mAlarmEntity.getStopMode() == Define.STOP_MODE_ADDITION) {
             mQuestion = Question.createRandomQuestion();
 
             mTextQuestion.setText(mQuestion.getQuestionString());
@@ -194,7 +185,7 @@ public class AlarmActivity extends AppCompatActivity {
         mVibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
 
         // 音量徐々に大きくする
-        if (mAlarmEntity.getSoundMode() == SOUND_MODE_LARGE_SLOWLY) {
+        if (mAlarmEntity.getSoundMode() == Define.SOUND_MODE_LARGE_SLOWLY) {
             mVolumeChanger = new Handler(Looper.getMainLooper());
 
             final int DELAY_MS = 4000;
@@ -236,7 +227,7 @@ public class AlarmActivity extends AppCompatActivity {
     }
 
     void onAnswer() {
-        if (mAlarmEntity.getStopMode() == STOP_MODE_ADDITION) {
+        if (mAlarmEntity.getStopMode() == Define.STOP_MODE_ADDITION) {
             String answer = mEditAnswer.getText().toString();
 
             if (mQuestion.isCorrectAnswer(answer)) {
@@ -266,7 +257,7 @@ public class AlarmActivity extends AppCompatActivity {
         // 再生するかどうかを計算
         boolean playSound = false;
         boolean playVibration = false;
-        if (mAlarmEntity.getManorMode() == MANOR_MODE_FOLLOW_OS) {
+        if (mAlarmEntity.getManorMode() == Define.MANOR_MODE_FOLLOW_OS) {
             AudioManager audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
             int ringerMode = audioManager.getRingerMode();
             switch (ringerMode) {
