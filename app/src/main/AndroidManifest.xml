@@ -21,6 +21,11 @@
 
         <activity android:name=".AlarmRegistActivity" />
         <activity android:name=".AlarmActivity" />
+        <activity
+            android:name=".SnoozeActivity"
+            android:windowSoftInputMode="adjustResize">
+
+        </activity>
 
         <service android:name=".AlarmService"></service>
 

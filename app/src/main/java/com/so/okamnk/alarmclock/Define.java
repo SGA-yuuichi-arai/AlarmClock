@@ -6,7 +6,10 @@ package com.so.okamnk.alarmclock;
 
 public class Define {
 
+    // alarmIDのKey文字列
     public static final String ALARM_ID_KEY = "alarmId";
+    // AlarmEntityのKey文字列
+    public static final String ALARM_ENTITY = "alarmEntity";
 
     // 音量パターン
     public static final int SOUND_MODE_NORMAL = 0;
