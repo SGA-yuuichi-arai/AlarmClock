@@ -1,7 +1,9 @@
 package com.so.okamnk.alarmclock;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -77,29 +79,38 @@ public class AlarmListActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onClickDelete(AlarmEntity entity) {
+            public void onClickDelete(final AlarmEntity entity) {
 
-                AlarmDBAdapter dbAdapter = new AlarmDBAdapter(getApplicationContext());
-                try {
-                    dbAdapter.deleteAlarm(entity.getAlarmId());
-                    AlarmRegistHelper registHelper = AlarmRegistHelper.getInstance();
-                    ArrayList alarmEntities = new ArrayList();
-                    alarmEntities.add(entity);
-                    registHelper.unregistAsync(getApplicationContext(), alarmEntities, new AlarmRegistHelper.OnAlarmRegistHelperListener() {
-                        @Override
-                        public void onRegistration(int alarmID, AlarmRegistHelper.RegistReturnCode returnCode) {
+                new AlertDialog.Builder(AlarmListActivity.this)
+                        .setMessage(getString(R.string.message_delete, entity.getAlarmName()))
+                        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
 
-                        }
+                                AlarmDBAdapter dbAdapter = new AlarmDBAdapter(getApplicationContext());
+                                try {
+                                    dbAdapter.deleteAlarm(entity.getAlarmId());
+                                    AlarmRegistHelper registHelper = AlarmRegistHelper.getInstance();
+                                    ArrayList alarmEntities = new ArrayList();
+                                    alarmEntities.add(entity);
+                                    registHelper.unregistAsync(getApplicationContext(), alarmEntities, new AlarmRegistHelper.OnAlarmRegistHelperListener() {
+                                        @Override
+                                        public void onRegistration(int alarmID, AlarmRegistHelper.RegistReturnCode returnCode) {
 
-                        @Override
-                        public void onCompletion() {
-                            listUpdate();
-                        }
-                    });
-                } catch (RuntimeException e) {
+                                        }
 
-                }
+                                        @Override
+                                        public void onCompletion() {
+                                            listUpdate();
+                                        }
+                                    });
+                                } catch (RuntimeException e) {
 
+                                }
+                            }
+                        })
+                        .setNegativeButton(R.string.cancel, null)
+                        .show();
             }
 
             @Override

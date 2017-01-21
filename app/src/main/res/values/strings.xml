@@ -8,6 +8,9 @@
     <string name="saturday">土</string>
     <string name="sunday">日</string>
     <string name="about">アプリについて…</string>
+    <string name="message_delete">%sを削除します</string>
+    <string name="ok">OK</string>
+    <string name="cancel">キャンセル</string>
     <string-array name="pattern">
         <item>普通</item>
         <item>だんだん大きく</item>
