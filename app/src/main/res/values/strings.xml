@@ -7,6 +7,7 @@
     <string name="friday">金</string>
     <string name="saturday">土</string>
     <string name="sunday">日</string>
+    <string name="about">アプリについて…</string>
     <string-array name="pattern">
         <item>普通</item>
         <item>だんだん大きく</item>
