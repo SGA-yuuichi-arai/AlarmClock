@@ -31,6 +31,11 @@ import com.so.okamnk.alarmclock.util.StringUtility;
 import java.util.ArrayList;
 import java.util.Calendar;
 
+import static com.so.okamnk.alarmclock.Define.ALARM_ENTITY;
+import static com.so.okamnk.alarmclock.Define.ALARM_ID_KEY;
+import static com.so.okamnk.alarmclock.Define.STOP_MODE_ADDITION;
+import static com.so.okamnk.alarmclock.Define.STOP_MODE_TAP;
+
 /**
  * Created by araiyuuichi on 2016/11/11.
  */
@@ -48,7 +53,7 @@ public class AlarmRegistActivity extends AppCompatActivity implements View.OnCli
     private Spinner spinner_pattern, spinner_release, spinner_interval, spinner_times, spinner_mannerMode;
     private ToggleButton toggleButton_monday, toggleButton_tuesday, toggleButton_wednesday, toggleButton_thursday, toggleButton_friday, toggleButton_saturday, toggleButton_sunday;
 
-    private boolean isEdit = false; //「編集」と「追加」を判別する
+    private boolean isEdit = true; //「編集」と「追加」を判別する
     private AlarmEntity alarmEntity;
     private int alarmId = 0;
 
@@ -140,8 +145,11 @@ public class AlarmRegistActivity extends AppCompatActivity implements View.OnCli
         toggleButton_sunday = (ToggleButton) findViewById(R.id.toggleButton_sunday);
         toggleButton_sunday.setOnCheckedChangeListener(this);
 
+        alarmId = getIntent().getIntExtra(ALARM_ID_KEY, 0);
+        isEdit = getIntent().getBooleanExtra("isEditable", true);
+
         if (isEdit) {
-            //displayViewEdit();
+            displayViewEdit();
         } else {
             displayViewAdd();
         }
@@ -222,7 +230,6 @@ public class AlarmRegistActivity extends AppCompatActivity implements View.OnCli
 
             case R.id.imageButton_back:
                 cancelAlarmRegister();
-                //startActivity(new Intent(AlarmRegistActivity.this, AlarmListActivity.class));
                 break;
 
             case R.id.imageButton_preview:
@@ -334,8 +341,6 @@ public class AlarmRegistActivity extends AppCompatActivity implements View.OnCli
      */
     private void displayViewEdit() {
 
-        // DB接続
-        //AlarmDBHelper alarmDBHelper = new AlarmDBHelper(getApplicationContext());
         AlarmDBAdapter adapter = new AlarmDBAdapter(getApplicationContext());
         alarmEntity = adapter.getAlarm(alarmId);
 
@@ -390,15 +395,22 @@ public class AlarmRegistActivity extends AppCompatActivity implements View.OnCli
      */
     public void transitionToAlarmCancel(int stopmode, View v) {
 
-        startActivity(new Intent(AlarmRegistActivity.this, AlarmActivity.class));
+        boolean isPreview = false;
 
-        /* アラーム解除画面に遷移させるように変更
-        if (mode.equals(STOP_MODE.TAP)) {
-            startActivity(new Intent(AlarmRegistActivity.this, AboutActivity.class));
-        } else if (mode.equals(STOP_MODE.ADDITION)) {
-            startActivity(new Intent(AlarmRegistActivity.this, AboutActivity.class));
+        alarmEntity = setAlarmEntity(alarmEntity);
+
+        Intent intent = new Intent(AlarmRegistActivity.this, AlarmActivity.class);
+
+        if (stopmode == STOP_MODE_TAP) {
+            isPreview = false;
+        } else if (stopmode == STOP_MODE_ADDITION) {
+            isPreview = true;
         }
-        */
+
+        intent.putExtra(ALARM_ID_KEY, alarmEntity.getAlarmId());
+        intent.putExtra(ALARM_ENTITY, alarmEntity);
+        intent.putExtra("isPreview", isPreview);
+        startActivity(intent);
     }
 
     /**
@@ -410,13 +422,10 @@ public class AlarmRegistActivity extends AppCompatActivity implements View.OnCli
 
         alarmEntity = setAlarmEntity(alarmEntity);
 
-        // Todo:戻ってきたときにAlarmEntityが初期化される
-        startActivity(new Intent(AlarmRegistActivity.this, SoundListActivity.class));
-
-        /* アラーム音選択画面に遷移させるように変更
-        Intent intent = new Intent(AlarmRegistActivity.this, AboutActivity.class);
+        Intent intent = new Intent(AlarmRegistActivity.this, SoundListActivity.class);
+        intent.putExtra(ALARM_ID_KEY, alarmEntity.getAlarmId());
+        intent.putExtra(ALARM_ENTITY, alarmEntity);
         startActivity(intent);
-        */
     }
 
     public boolean determineFixedButton(View v) {
@@ -424,7 +433,8 @@ public class AlarmRegistActivity extends AppCompatActivity implements View.OnCli
         alarmEntity = setAlarmEntity(alarmEntity);
         AlarmDBAdapter adapter = new AlarmDBAdapter(getApplicationContext());
         AlarmEntity entityAdapter = adapter.saveAlarm(alarmEntity);
-        if (alarmEntity.equals(entityAdapter)) {
+        //if (alarmEntity.equals(entityAdapter)) {
+        if (alarmEntity.getAlarmTime().equals(entityAdapter.getAlarmTime())) {
         } else {
             showDialog("データベース登録失敗", "データベースの登録に失敗しました");
             return false;
