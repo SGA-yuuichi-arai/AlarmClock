@@ -67,8 +67,8 @@ public class AboutActivity extends AppCompatActivity {
 
         textView_openSourceLicense.setText("オープンソースライセンス：");
 
-        //webview.loadUrl("file:///android_asset/index.html");
-        webview.loadDataWithBaseURL(null, createHtml(), "text/html", "utf-8", null);
+        webview.loadUrl("file:///android_asset/index.html");
+        //webview.loadDataWithBaseURL(null, createHtml(), "text/html", "utf-8", null);
 
     }
 
