@@ -1,6 +1,5 @@
 package com.so.okamnk.alarmclock.util;
 
-import android.content.Context;
 import android.media.MediaPlayer;
 
 /**
@@ -8,22 +7,22 @@ import android.media.MediaPlayer;
  */
 
 public class AlarmMediaPlayer {
-    private AlarmMediaPlayer alarmMediaPlayer = null;
+    private static AlarmMediaPlayer alarmMediaPlayer = null;
     private MediaPlayer mediaPlayer = null;
     // 他にも独自に保持しておきたい物(例えばsetDataSourceしたパスとか)があればここに宣言＋set/getを作成
 
-    private AlarmMediaPlayer(){
+    private AlarmMediaPlayer() {
         mediaPlayer = new MediaPlayer();
     }
 
-    public AlarmMediaPlayer getInstance(){
-        if(alarmMediaPlayer == null){
+    public static AlarmMediaPlayer getInstance() {
+        if (alarmMediaPlayer == null) {
             alarmMediaPlayer = new AlarmMediaPlayer();
         }
         return alarmMediaPlayer;
     }
 
-    public MediaPlayer getMediaPlayer(){
+    public MediaPlayer getMediaPlayer() {
         return mediaPlayer;
     }
 

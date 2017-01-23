@@ -117,8 +117,8 @@ public class AlarmListActivity extends AppCompatActivity {
             public void onClickPreview(AlarmEntity entity) {
 
                 Intent intent = new Intent(getApplicationContext(), AlarmActivity.class);
-                intent.putExtra("isPreview", true);
-                // AlarmEntityがシリアライズ対応したらIntentにputする
+                intent.putExtra(Define.IS_PREVIEW_KEY, true);
+                intent.putExtra(Define.ALARM_ENTITY, entity);
                 startActivity(intent);
             }
         });
