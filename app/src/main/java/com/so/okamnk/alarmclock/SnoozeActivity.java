@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -27,6 +26,7 @@ public class SnoozeActivity extends AppCompatActivity implements View.OnClickLis
     private Calendar baseTimeCalender;
 
     private AlarmEntity alarmEntity;
+    private boolean previewFlg;
     private int remainingTime;
 
     // UIオブジェクト
@@ -44,6 +44,7 @@ public class SnoozeActivity extends AppCompatActivity implements View.OnClickLis
 
         this.question = Question.createRandomQuestion();
         this.alarmEntity = (AlarmEntity) getIntent().getSerializableExtra(Define.ALARM_ENTITY);
+        this.previewFlg = getIntent().getBooleanExtra(Define.IS_PREVIEW_KEY, false);
         this.remainingTime = alarmEntity.getSnoozeInterval();
 
         // 現在時刻
@@ -55,32 +56,37 @@ public class SnoozeActivity extends AppCompatActivity implements View.OnClickLis
         remainingTimeTextView = (TextView) findViewById(R.id.snooze_text_remainingTime);
         remainingTimeTextView.setText(getFormatingRemainingTime(this.remainingTime));
 
-        if (this.alarmEntity.getStopMode() == Define.STOP_MODE_ADDITION) {
-            // 問題文
-            questionTextView = (TextView) findViewById(R.id.snooze_text_question);
-            questionTextView.setText(question.getQuestionString());
+        // 問題文
+        questionTextView = (TextView) findViewById(R.id.snooze_text_question);
+        questionTextView.setText(question.getQuestionString());
 
-            // 回答欄
-            anserEditText = (EditText) findViewById(R.id.snooze_edit_answer);
-            anserEditText.setInputType(InputType.TYPE_CLASS_NUMBER);
-            anserEditText.setText("");
-            anserEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-                @Override
-                public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                    if (actionId == EditorInfo.IME_ACTION_DONE) {
-                        answerCalcation();
-                    }
-                    return false;
+        // 回答欄
+        anserEditText = (EditText) findViewById(R.id.snooze_edit_answer);
+        anserEditText.setInputType(InputType.TYPE_CLASS_NUMBER);
+        anserEditText.setText("");
+        anserEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    answerCalcation();
                 }
-            });
+                return false;
+            }
+        });
 
-            // パスボタン
-            passButton = (Button) findViewById(R.id.snooze_button_pass);
-            passButton.setOnClickListener(this);
-        }
+        // パスボタン
+        passButton = (Button) findViewById(R.id.snooze_button_pass);
+        passButton.setOnClickListener(this);
         // 回答ボタン
         answerButton = (Button) findViewById(R.id.snooze_button_answer);
         answerButton.setOnClickListener(this);
+
+        if (this.alarmEntity.getStopMode() == Define.STOP_MODE_ADDITION) {
+            questionTextView.setVisibility(View.INVISIBLE);
+            anserEditText.setVisibility(View.INVISIBLE);
+            passButton.setVisibility(View.INVISIBLE);
+            answerButton.setText("停止");
+        }
 
         // スレッドで、残り時間のカウントダウンと、現在時刻の更新
         this.guiThreadHandler = new Handler();
@@ -127,7 +133,6 @@ public class SnoozeActivity extends AppCompatActivity implements View.OnClickLis
         // 問題を再作成
         this.anserEditText.setText("");
         this.question = Question.createRandomQuestion();
-        Log.d("katoDebug", "renew question. question=" + this.question.getQuestionString());
         this.questionTextView.setText(this.question.getQuestionString());
     }
 
@@ -136,12 +141,14 @@ public class SnoozeActivity extends AppCompatActivity implements View.OnClickLis
             // 回答の確認
             String userAnserStr = this.anserEditText.getText().toString();
             if (StringUtility.isNullOrEmpty(userAnserStr) == true) {
-                Toast.makeText(this, "回答を入力してください", Toast.LENGTH_LONG).show();
+                // 不正解と同じメッセージで
+                Toast.makeText(this, "不正解です。", Toast.LENGTH_LONG).show();
                 return;
             }
 
             if (this.question.isCorrectAnswer(userAnserStr) == false) {
-                Toast.makeText(this, "回答が間違っています", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "不正解です。", Toast.LENGTH_LONG).show();
+                this.anserEditText.setText("");
                 return;
             }
         }
@@ -171,10 +178,9 @@ public class SnoozeActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private void moveAlarmActivty() {
-        //Intent intent = new Intent(getApplicationContext(), AlarmActivity.class);
-        // TODO kato AlarmActivityに遷移するとエラーがでるので、暫定的にリスト画面へ移動
-        Intent intent = new Intent(getApplicationContext(), AlarmListActivity.class);
-        intent.putExtra(Define.ALARM_ENTITY, alarmEntity);
+        Intent intent = new Intent(getApplicationContext(), AlarmActivity.class);
+        intent.putExtra(Define.ALARM_ENTITY, this.alarmEntity);
+        intent.putExtra(Define.IS_PREVIEW_KEY, this.previewFlg);
         startActivity(intent);
     }
 
@@ -182,12 +188,15 @@ public class SnoozeActivity extends AppCompatActivity implements View.OnClickLis
         new Thread(new Runnable() {
             @Override
             public void run() {
-                while (remainingTime > 0) {
+                while (true) {
                     remainingTime = remainingTime - 1;
+                    if (remainingTime <= 0) {
+                        break;
+                    }
+
                     baseTimeCalender.add(Calendar.SECOND, 1);
                     setRemainingTimeTextAsync();
                     setNowTimeTextAsync();
-                    Log.d("katoDebug", "Looping. remainingTime=" + remainingTime + " nowTime=" + baseTimeCalender.get(Calendar.MINUTE) + ":" + baseTimeCalender.get(Calendar.SECOND));
 
                     try {
                         Thread.sleep(1000);
@@ -195,7 +204,6 @@ public class SnoozeActivity extends AppCompatActivity implements View.OnClickLis
                         e.printStackTrace();
                     }
                 }
-                Log.d("katoDebug", "Loop END!! remainingTime=" + remainingTime + " nowTime=" + baseTimeCalender.get(Calendar.MINUTE) + ":" + baseTimeCalender.get(Calendar.SECOND));
                 // インターバルをカウントし終えたら、アラーム画面に遷移する
                 moveAlarmActivty();
 
