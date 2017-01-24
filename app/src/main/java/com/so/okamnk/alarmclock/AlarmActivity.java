@@ -1,18 +1,10 @@
 package com.so.okamnk.alarmclock;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Vibrator;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -22,8 +14,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.so.okamnk.alarmclock.util.AlarmEntity;
-
-import java.io.IOException;
 
 public class AlarmActivity extends AppCompatActivity {
     private TextView mTextAlarmName;
@@ -36,28 +26,6 @@ public class AlarmActivity extends AppCompatActivity {
     private AlarmEntity mAlarmEntity;
 
     private Question mQuestion;
-    private MediaPlayer mMediaPlayer;
-    private Vibrator mVibrator;
-
-    private Handler mVolumeChanger;
-    private float mVolume;            // 徐々に音量を上げるときに使う
-
-    private class RingerModeReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (mActivity != null) {
-                mActivity.updateAlarm();
-            }
-        }
-
-        private void setAlarmActivity(AlarmActivity activity) {
-            mActivity = activity;
-        }
-
-        private AlarmActivity mActivity = null;
-    }
-
-    private RingerModeReceiver mRingerModeReceiver;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -111,12 +79,6 @@ public class AlarmActivity extends AppCompatActivity {
                                      }
         );
 
-        mRingerModeReceiver = new RingerModeReceiver();
-        mRingerModeReceiver.setAlarmActivity(this);
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction("android.media.RINGER_MODE_CHANGED");
-        registerReceiver(mRingerModeReceiver, intentFilter);
-
         Intent intent = getIntent();
         boolean isPreview = intent.getBooleanExtra(Define.IS_PREVIEW_KEY, false);
         AlarmEntity alarmEntity = (AlarmEntity) intent.getSerializableExtra(Define.ALARM_ENTITY);
@@ -126,10 +88,6 @@ public class AlarmActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        unregisterReceiver(mRingerModeReceiver);
-        if (mVolumeChanger != null) {
-            mVolumeChanger.removeCallbacksAndMessages(null);
-        }
         super.onDestroy();
     }
 
@@ -161,45 +119,7 @@ public class AlarmActivity extends AppCompatActivity {
             mButtonPass.setVisibility(View.GONE);
         }
 
-        // サウンド
-        mMediaPlayer = new MediaPlayer();
-        try {
-            mVolume = mAlarmEntity.getSoundVolume() / 100.0f;
-
-            mMediaPlayer.setDataSource(mAlarmEntity.getSoundPath());
-            mMediaPlayer.setAudioStreamType(AudioManager.STREAM_ALARM);
-            mMediaPlayer.setLooping(true);
-            mMediaPlayer.setVolume(mVolume, mVolume);
-            mMediaPlayer.prepare();
-        } catch (IOException e) {
-            Log.d("AlarmActivity", e.getMessage());
-        }
-
-        // バイブレーション
-        mVibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
-
-        // 音量徐々に大きくする
-        if (mAlarmEntity.getSoundMode() == Define.SOUND_MODE_LARGE_SLOWLY) {
-            mVolumeChanger = new Handler(Looper.getMainLooper());
-
-            final int DELAY_MS = 4000;
-            mVolumeChanger.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    mVolume += 0.05f;
-                    if (mVolume > 1.0f) {
-                        mVolume = 1.0f;
-                    }
-                    mMediaPlayer.setVolume(mVolume, mVolume);
-                    mVolumeChanger.postDelayed(this, DELAY_MS);
-                }
-            }, DELAY_MS);
-        } else {
-            mVolumeChanger = null;
-        }
-
-        // 再生
-        updateAlarm();
+        startAlarm();
     }
 
     void onPass() {
@@ -238,58 +158,18 @@ public class AlarmActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * アラーム再生状態を更新する。
-     */
-    private void updateAlarm() {
-        // 再生するかどうかを計算
-        boolean playSound = false;
-        boolean playVibration = false;
-        if (mAlarmEntity.getManorMode() == Define.MANOR_MODE_FOLLOW_OS) {
-            AudioManager audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
-            int ringerMode = audioManager.getRingerMode();
-            switch (ringerMode) {
-                case AudioManager.RINGER_MODE_SILENT:
-                    playSound = false;
-                    playVibration = false;
-                    break;
-                case AudioManager.RINGER_MODE_VIBRATE:
-                    playSound = false;
-                    playVibration = true;
-                    break;
-                case AudioManager.RINGER_MODE_NORMAL:
-                    playSound = true;
-                    playVibration = false;
-                    break;
-            }
-        } else {
-            playSound = true;
-            playVibration = false;
-        }
-
-        if (playSound) {
-            if (mMediaPlayer.isPlaying() == false) {
-                mMediaPlayer.start();
-            }
-        } else {
-            if (mMediaPlayer.isPlaying()) {
-                mMediaPlayer.pause();
-            }
-        }
-
-        if (playVibration) {
-            long vibratePattern[] = {500, 500};
-            mVibrator.vibrate(vibratePattern, 0);
-        } else {
-            mVibrator.cancel();
-        }
+    // TODO : AlarmUtility.startAlarmServiceの引数をalarmIDからalarmEntityに変えてもらう。そしてここではそれを呼ぶようにする。
+    public void startAlarm() {
+        Context context = getApplicationContext();
+        Intent intent = new Intent(context, AlarmService.class);
+        intent.putExtra(Define.ALARM_ENTITY, mAlarmEntity);
+        context.startService(intent);
     }
 
-    /**
-     * アラームを停止する
-     */
-    private void stopAlarm() {
-        mMediaPlayer.stop();
-        mVibrator.cancel();
+    // TODO : startAlarmと同様にAlarmUtilityのを呼び出すようにする
+    public void stopAlarm() {
+        Context context = getApplicationContext();
+        Intent intent = new Intent(getApplicationContext(), AlarmService.class);
+        context.stopService(intent);
     }
 }
