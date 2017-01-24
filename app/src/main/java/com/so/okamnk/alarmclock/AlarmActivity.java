@@ -22,7 +22,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.so.okamnk.alarmclock.util.AlarmDBAdapter;
 import com.so.okamnk.alarmclock.util.AlarmEntity;
 
 import java.io.IOException;
@@ -34,6 +33,7 @@ public class AlarmActivity extends AppCompatActivity {
     private Button mButtonPass;
     private Button mButtonAnswer;
 
+    private boolean mIsPreview;
     private AlarmEntity mAlarmEntity;
 
     private Question mQuestion;
@@ -119,16 +119,10 @@ public class AlarmActivity extends AppCompatActivity {
         registerReceiver(mRingerModeReceiver, intentFilter);
 
         Intent intent = getIntent();
-        boolean isPreview = intent.getBooleanExtra("isPreview", false);
-        AlarmEntity alarmEntity = null;
-        if (isPreview) {
-            alarmEntity = (AlarmEntity) intent.getSerializableExtra("alarmEntity");
-        } else {
-            int alarmID = intent.getIntExtra("alarmID", 0);
-            AlarmDBAdapter db = new AlarmDBAdapter(getApplicationContext());
-            alarmEntity = db.getAlarm(alarmID);
-        }
-        onInit(alarmEntity);
+        boolean isPreview = intent.getBooleanExtra(Define.IS_PREVIEW_KEY, false);
+        AlarmEntity alarmEntity = (AlarmEntity) intent.getSerializableExtra(Define.ALARM_ENTITY);
+
+        onInit(isPreview, alarmEntity);
     }
 
     @Override
@@ -140,7 +134,8 @@ public class AlarmActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
-    void onInit(AlarmEntity alarmEntity) {
+    void onInit(boolean isPreview, AlarmEntity alarmEntity) {
+        mIsPreview = isPreview;
         mAlarmEntity = alarmEntity;
 
         // 問題とコントロール
@@ -219,7 +214,8 @@ public class AlarmActivity extends AppCompatActivity {
         stopAlarm();
 
         Intent intent = new Intent(getApplicationContext(), SnoozeActivity.class);
-        intent.putExtra("alarmID", mAlarmEntity.getAlarmId());
+        intent.putExtra(Define.IS_PREVIEW_KEY, mIsPreview);
+        intent.putExtra(Define.ALARM_ENTITY, mAlarmEntity);
         startActivity(intent);
 
         // この画面にはもう戻れないように終了させる
