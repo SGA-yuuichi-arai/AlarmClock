@@ -1,9 +1,7 @@
 package com.so.okamnk.alarmclock;
 
-import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
@@ -21,6 +19,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.so.okamnk.alarmclock.util.AlarmEntity;
 
@@ -230,15 +229,8 @@ public class AlarmActivity extends AppCompatActivity {
                 stopAlarm();
                 finish();
             } else {
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setMessage("不正解です");
-                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                    }
-                });
-                builder.setCancelable(false);
-                builder.show();
+                Toast.makeText(this, "不正解です。", Toast.LENGTH_LONG).show();
+                mEditAnswer.setText("");
             }
         } else {
             stopAlarm();
