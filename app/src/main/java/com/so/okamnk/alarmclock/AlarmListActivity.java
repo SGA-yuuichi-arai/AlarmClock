@@ -71,6 +71,7 @@ public class AlarmListActivity extends AppCompatActivity {
 
                 Intent intent = new Intent(getApplicationContext(), AlarmRegistActivity.class);
                 intent.putExtra(Define.IS_EDITABLE_KEY, true);
+                intent.putExtra(Define.ALARM_ENTITY, entity);
                 startActivity(intent);
             }
 
