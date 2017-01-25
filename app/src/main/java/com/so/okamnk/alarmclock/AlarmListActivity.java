@@ -41,7 +41,7 @@ public class AlarmListActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View view) {
                     Intent intent = new Intent(getApplicationContext(), AlarmRegistActivity.class);
-                    intent.putExtra("isEditable", false);
+                    intent.putExtra(Define.IS_EDITABLE_KEY, false);
                     startActivity(intent);
                 }
             });
@@ -70,12 +70,8 @@ public class AlarmListActivity extends AppCompatActivity {
             public void onClickEdit(AlarmEntity entity) {
 
                 Intent intent = new Intent(getApplicationContext(), AlarmRegistActivity.class);
-                intent.putExtra("isEditable", true);
+                intent.putExtra(Define.IS_EDITABLE_KEY, true);
                 startActivity(intent);
-
-                AlarmRegistHelper registHelper = AlarmRegistHelper.getInstance();
-                ArrayList alarmEntities = new ArrayList();
-                alarmEntities.add(entity);
             }
 
             @Override

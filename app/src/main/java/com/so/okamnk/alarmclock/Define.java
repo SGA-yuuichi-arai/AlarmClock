@@ -11,6 +11,8 @@ public class Define {
     public static final String ALARM_ID_KEY = "alarmId";
     // isPreviewのKey文字列
     public static final String IS_PREVIEW_KEY = "isPreview";
+    // isEditableのKey文字列
+    public static final String IS_EDITABLE_KEY = "isEditable";
     // AlarmEntityのKey文字列
     public static final String ALARM_ENTITY = "alarmEntity";
 
