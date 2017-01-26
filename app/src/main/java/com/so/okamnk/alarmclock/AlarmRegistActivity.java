@@ -33,6 +33,8 @@ import java.util.Calendar;
 
 import static com.so.okamnk.alarmclock.Define.ALARM_ENTITY;
 import static com.so.okamnk.alarmclock.Define.ALARM_ID_KEY;
+import static com.so.okamnk.alarmclock.Define.IS_EDITABLE_KEY;
+import static com.so.okamnk.alarmclock.Define.IS_PREVIEW_KEY;
 import static com.so.okamnk.alarmclock.Define.STOP_MODE_ADDITION;
 import static com.so.okamnk.alarmclock.Define.STOP_MODE_TAP;
 
@@ -145,10 +147,12 @@ public class AlarmRegistActivity extends AppCompatActivity implements View.OnCli
         toggleButton_sunday = (ToggleButton) findViewById(R.id.toggleButton_sunday);
         toggleButton_sunday.setOnCheckedChangeListener(this);
 
-        alarmId = getIntent().getIntExtra(ALARM_ID_KEY, 0);
-        isEdit = getIntent().getBooleanExtra("isEditable", true);
+        //alarmId = getIntent().getIntExtra(ALARM_ID_KEY, 0);
+        //alarmEntity = (AlarmEntity) getIntent().getSerializableExtra(ALARM_ENTITY);
+        isEdit = getIntent().getBooleanExtra(IS_EDITABLE_KEY, true);
 
         if (isEdit) {
+            alarmEntity = (AlarmEntity) getIntent().getSerializableExtra(ALARM_ENTITY);
             displayViewEdit();
         } else {
             displayViewAdd();
@@ -341,8 +345,10 @@ public class AlarmRegistActivity extends AppCompatActivity implements View.OnCli
      */
     private void displayViewEdit() {
 
+        /*
         AlarmDBAdapter adapter = new AlarmDBAdapter(getApplicationContext());
         alarmEntity = adapter.getAlarm(alarmId);
+        */
 
         editText_alarmName.setText(alarmEntity.getAlarmName());
 
@@ -409,7 +415,7 @@ public class AlarmRegistActivity extends AppCompatActivity implements View.OnCli
 
         intent.putExtra(ALARM_ID_KEY, alarmEntity.getAlarmId());
         intent.putExtra(ALARM_ENTITY, alarmEntity);
-        intent.putExtra("isPreview", isPreview);
+        intent.putExtra(IS_PREVIEW_KEY, isPreview);
         startActivity(intent);
     }
 
