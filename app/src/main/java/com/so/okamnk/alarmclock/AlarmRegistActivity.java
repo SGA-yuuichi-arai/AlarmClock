@@ -494,7 +494,7 @@ public class AlarmRegistActivity extends AppCompatActivity implements View.OnCli
             minute = picker.getCurrentMinute();
         }
 
-        str = String.valueOf(hour) + ':' + String.valueOf(minute);
+        str = String.format("%02d", hour) + ':' + String.format("%02d", minute);
         return str;
     }
 
