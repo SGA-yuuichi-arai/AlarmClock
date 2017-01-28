@@ -42,8 +42,6 @@ import static com.so.okamnk.alarmclock.Define.STOP_MODE_TAP;
  * Created by araiyuuichi on 2016/11/11.
  */
 
-
-// public class AlarmRegistActivity extends AppCompatActivity implements View.OnClickListener, CompoundButton.OnCheckedChangeListener, AlarmRegistHelper.OnAlarmRegistHelperListener {
 public class AlarmRegistActivity extends AppCompatActivity implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
 
 
@@ -328,7 +326,6 @@ public class AlarmRegistActivity extends AppCompatActivity implements View.OnCli
         spinner_mannerMode.setSelection(0); //デフォルト値＝「バイブレーション」
 
         toggleButton_monday.setChecked(true);
-        //toggleButton_monday.setBackgroundColor(R.color.colorToggleButtonOn);
         toggleButton_tuesday.setChecked(true);
         toggleButton_wednesday.setChecked(true);
         toggleButton_thursday.setChecked(true);
@@ -431,12 +428,17 @@ public class AlarmRegistActivity extends AppCompatActivity implements View.OnCli
         startActivity(intent);
     }
 
+    /**
+     * 編集や追加の確定
+     * @param v
+     * @return
+     */
     public boolean determineFixedButton(View v) {
 
         alarmEntity = setAlarmEntity(alarmEntity);
         AlarmDBAdapter adapter = new AlarmDBAdapter(getApplicationContext());
         AlarmEntity entityAdapter = adapter.saveAlarm(alarmEntity);
-        //if (alarmEntity.equals(entityAdapter)) {
+
         if (alarmEntity.getAlarmTime().equals(entityAdapter.getAlarmTime())) {
         } else {
             showDialog("データベース登録失敗", "データベースの登録に失敗しました");
@@ -465,7 +467,7 @@ public class AlarmRegistActivity extends AppCompatActivity implements View.OnCli
     private void cancelAlarmRegister() {
 
         alarmEntity = null;
-        startActivity(new Intent(AlarmRegistActivity.this, AlarmListActivity.class));
+        finish();
 
     }
 

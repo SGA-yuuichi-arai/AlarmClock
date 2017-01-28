@@ -42,8 +42,7 @@ public class AboutActivity extends AppCompatActivity {
         imageButton_back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(AboutActivity.this, AlarmListActivity.class);
-                startActivity(intent);
+                finish();
             }
         });
 
@@ -68,7 +67,6 @@ public class AboutActivity extends AppCompatActivity {
         textView_openSourceLicense.setText("オープンソースライセンス：");
 
         webview.loadUrl("file:///android_asset/index.html");
-        //webview.loadDataWithBaseURL(null, createHtml(), "text/html", "utf-8", null);
 
     }
 
