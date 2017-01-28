@@ -37,6 +37,9 @@ import static com.so.okamnk.alarmclock.Define.IS_EDITABLE_KEY;
 import static com.so.okamnk.alarmclock.Define.IS_PREVIEW_KEY;
 import static com.so.okamnk.alarmclock.Define.STOP_MODE_ADDITION;
 import static com.so.okamnk.alarmclock.Define.STOP_MODE_TAP;
+import static com.so.okamnk.alarmclock.util.AlarmRegistHelper.RegistReturnCode.RET_ERROR_EXIST;
+import static com.so.okamnk.alarmclock.util.AlarmRegistHelper.RegistReturnCode.RET_ERROR_UNKNOWN;
+import static com.so.okamnk.alarmclock.util.AlarmRegistHelper.RegistReturnCode.RET_SUCCEEDED;
 
 /**
  * Created by araiyuuichi on 2016/11/11.
@@ -53,7 +56,7 @@ public class AlarmRegistActivity extends AppCompatActivity implements View.OnCli
     private Spinner spinner_pattern, spinner_release, spinner_interval, spinner_times, spinner_mannerMode;
     private ToggleButton toggleButton_monday, toggleButton_tuesday, toggleButton_wednesday, toggleButton_thursday, toggleButton_friday, toggleButton_saturday, toggleButton_sunday;
 
-    private boolean isEdit = true; //「編集」と「追加」を判別する
+    private boolean isEdit = false; //「編集」と「追加」を判別する
     private AlarmEntity alarmEntity;
     private int alarmId = 0;
 
@@ -402,8 +405,10 @@ public class AlarmRegistActivity extends AppCompatActivity implements View.OnCli
         Intent intent = new Intent(AlarmRegistActivity.this, AlarmActivity.class);
 
         if (stopmode == STOP_MODE_TAP) {
+            Log.i("STOPMODE", "STOP_MODE_TAP");
             isPreview = false;
         } else if (stopmode == STOP_MODE_ADDITION) {
+            Log.i("STOPMODE", "STOP_MODE_ADDITION");
             isPreview = true;
         }
 
@@ -429,7 +434,8 @@ public class AlarmRegistActivity extends AppCompatActivity implements View.OnCli
     }
 
     /**
-     * 編集や追加の確定
+     * 編集・追加の確定
+     *
      * @param v
      * @return
      */
@@ -441,24 +447,42 @@ public class AlarmRegistActivity extends AppCompatActivity implements View.OnCli
 
         if (alarmEntity.getAlarmTime().equals(entityAdapter.getAlarmTime())) {
         } else {
-            showDialog("データベース登録失敗", "データベースの登録に失敗しました");
+            showDialog(getString(R.string.alarm_regist_failure_1), getString(R.string.alarm_regist_failure_2));
             return false;
         }
 
         ArrayList<AlarmEntity> entities = new ArrayList<>();
         entities.add(alarmEntity);
 
-        AlarmRegistHelper helper = AlarmRegistHelper.getInstance();
-        helper.regist(getApplicationContext(), entities, null); //nullでいいのか不明
+        final AlarmRegistHelper helper = AlarmRegistHelper.getInstance();
 
-        boolean isRegistered = helper.isRegistered(this, alarmEntity);
-        if (isRegistered) {
-        } else {
-            showDialog("アラーム登録失敗", "アラームの登録に失敗しました");
-            return false;
-        }
+        AlarmRegistHelper.OnAlarmRegistHelperListener alarm_listener = new AlarmRegistHelper.OnAlarmRegistHelperListener() {
 
-        cancelAlarmRegister();
+            boolean isRegist;
+
+            @Override
+            public void onRegistration(int alarmID, AlarmRegistHelper.RegistReturnCode returnCode) {
+
+                if (returnCode == RET_ERROR_EXIST) { //未使用
+                    isRegist = false;
+                    showDialog(getString(R.string.alarm_regist_failure_1), getString(R.string.alarm_regist_failure_2));
+                } else if (returnCode == RET_ERROR_UNKNOWN) {
+                    isRegist = false;
+                    showDialog(getString(R.string.alarm_regist_failure_1), getString(R.string.alarm_regist_failure_2));
+                } else if (returnCode == RET_SUCCEEDED) {
+                    isRegist = true;
+                }
+            }
+
+            @Override
+            public void onCompletion() {
+                Log.i("onCompletion", String.valueOf(isRegist));
+                if (isRegist) {
+                    cancelAlarmRegister();
+                }
+            }
+        };
+        helper.regist(getApplicationContext(), entities, alarm_listener);
 
         return true;
 
@@ -559,14 +583,5 @@ public class AlarmRegistActivity extends AppCompatActivity implements View.OnCli
         builder.show();
 
     }
-    /*
-    @Override
-    public void onRegistration(int alarmID, AlarmRegistHelper.RegistReturnCode returnCode) {
-    }
-
-    @Override
-    public void onCompletion() {
-    }
-    */
 
 }

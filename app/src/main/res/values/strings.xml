@@ -11,6 +11,8 @@
     <string name="message_delete">%sを削除します</string>
     <string name="ok">OK</string>
     <string name="cancel">キャンセル</string>
+    <string name="alarm_regist_failure_1">アラーム登録失敗</string>
+    <string name="alarm_regist_failure_2">アラームの登録に失敗しました</string>
     <string-array name="pattern">
         <item>普通</item>
         <item>だんだん大きく</item>
