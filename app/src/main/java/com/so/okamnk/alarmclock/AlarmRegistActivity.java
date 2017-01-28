@@ -147,12 +147,11 @@ public class AlarmRegistActivity extends AppCompatActivity implements View.OnCli
         toggleButton_sunday = (ToggleButton) findViewById(R.id.toggleButton_sunday);
         toggleButton_sunday.setOnCheckedChangeListener(this);
 
-        //alarmId = getIntent().getIntExtra(ALARM_ID_KEY, 0);
-        //alarmEntity = (AlarmEntity) getIntent().getSerializableExtra(ALARM_ENTITY);
-        isEdit = getIntent().getBooleanExtra(IS_EDITABLE_KEY, true);
+        isEdit = getIntent().getBooleanExtra(IS_EDITABLE_KEY, false);
 
         if (isEdit) {
             alarmEntity = (AlarmEntity) getIntent().getSerializableExtra(ALARM_ENTITY);
+            Log.i("Entity_ID", ((Integer) alarmEntity.getAlarmId()).toString());
             displayViewEdit();
         } else {
             displayViewAdd();
@@ -305,6 +304,7 @@ public class AlarmRegistActivity extends AppCompatActivity implements View.OnCli
     private void displayViewAdd() {
 
         alarmEntity.setAlarmId(0);
+
         editText_alarmName.setText("アラーム");
 
         Uri uriActual = RingtoneManager.getActualDefaultRingtoneUri(getApplicationContext(), RingtoneManager.TYPE_RINGTONE);
@@ -345,10 +345,7 @@ public class AlarmRegistActivity extends AppCompatActivity implements View.OnCli
      */
     private void displayViewEdit() {
 
-        /*
-        AlarmDBAdapter adapter = new AlarmDBAdapter(getApplicationContext());
-        alarmEntity = adapter.getAlarm(alarmId);
-        */
+        alarmId = alarmEntity.getAlarmId();
 
         editText_alarmName.setText(alarmEntity.getAlarmName());
 
