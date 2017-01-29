@@ -81,7 +81,7 @@ public class SnoozeActivity extends AppCompatActivity implements View.OnClickLis
         answerButton = (Button) findViewById(R.id.snooze_button_answer);
         answerButton.setOnClickListener(this);
 
-        if (this.alarmEntity.getStopMode() == Define.STOP_MODE_ADDITION) {
+        if (this.alarmEntity.getStopMode() == Define.STOP_MODE_TAP) {
             questionTextView.setVisibility(View.INVISIBLE);
             anserEditText.setVisibility(View.INVISIBLE);
             passButton.setVisibility(View.INVISIBLE);
