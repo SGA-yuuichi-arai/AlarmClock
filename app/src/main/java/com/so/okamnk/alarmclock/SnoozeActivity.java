@@ -189,12 +189,6 @@ public class SnoozeActivity extends AppCompatActivity implements View.OnClickLis
             @Override
             public void run() {
                 while (true) {
-                    remainingTime = remainingTime - 1;
-                    if (remainingTime <= 0) {
-                        break;
-                    }
-
-                    baseTimeCalender.add(Calendar.SECOND, 1);
                     setRemainingTimeTextAsync();
                     setNowTimeTextAsync();
 
@@ -202,6 +196,13 @@ public class SnoozeActivity extends AppCompatActivity implements View.OnClickLis
                         Thread.sleep(1000);
                     } catch (Exception e) {
                         e.printStackTrace();
+                    }
+
+                    baseTimeCalender.add(Calendar.SECOND, 1);
+                    remainingTime = remainingTime - 1;
+
+                    if (remainingTime <= 0) {
+                        break;
                     }
                 }
                 // インターバルをカウントし終えたら、アラーム画面に遷移する
