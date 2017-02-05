@@ -41,7 +41,6 @@ public class SoundListActivity extends Activity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sound_list);
 
-        //ビューオブジェクトの取得
         listView = (ListView) findViewById(R.id.soundlist);
         adapter = new ArrayAdapter<String>(this, R.layout.activity_sound_list);
         previewSwitch = (Switch) findViewById(R.id.preview_switch);
@@ -49,7 +48,6 @@ public class SoundListActivity extends Activity{
         fixButton = (Button) findViewById(R.id.fix_button);
         cancelButton = (Button) findViewById(R.id.cancel_button);
 
-        //リストビューの設定
         listView.setAdapter(adapter);
 
         // リストビューのアイテムをタップ -> リスナーの登録
@@ -57,9 +55,6 @@ public class SoundListActivity extends Activity{
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 ListView listView = (ListView) parent;
-
-                //タップしたアイテムの取得
-                //String item = (String) listView.getItemAtPosition(position);
 
                 //プレビュースイッチのON/OFFを判定
                 if (previewSwitch.isChecked() == true) {    //ONの場合
@@ -126,7 +121,6 @@ public class SoundListActivity extends Activity{
 
     private void getMusicList(){
 
-        //ContentResolverクラスのインスタンスを作成
         ContentResolver resolver = getContentResolver();
 
         //ミュージックリストを取得
@@ -141,7 +135,6 @@ public class SoundListActivity extends Activity{
                             null
                         );
 
-        //リストビューをクリア
         adapter.clear();
 
         //ミュージックリストの出力
@@ -155,9 +148,6 @@ public class SoundListActivity extends Activity{
 
         Ringtone ringtone;
 
-        //Uri muri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
-        //ringtone = RingtoneManager.getRingtone(getApplicationContext(),muri);
-
         //リストビューのpositionを指定
         RingtoneManager ringtoneManager = new RingtoneManager(getApplicationContext());
         ringtone = ringtoneManager.getRingtone(pos);
@@ -169,9 +159,6 @@ public class SoundListActivity extends Activity{
     private void stopSound(int pos){
 
         Ringtone ringtone;
-
-        //Uri muri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
-        //ringtone = RingtoneManager.getRingtone(getApplicationContext(),muri);
 
         //リストビューのpositionを指定
         RingtoneManager ringtoneManager = new RingtoneManager(getApplicationContext());
@@ -189,26 +176,11 @@ public class SoundListActivity extends Activity{
 
         //アクティビティを終了させて前の画面に戻る
         finish();
-
-        //アラーム登録画面に戻る
-        //Intent intent = new Intent();
-        //intent.setClassName("com.so.okamnk.alarmclock","com.so.okamnk.alarmclock.AlarmRegistActivity");
-
-        //アラーム登録画面に遷移
-        //startActivity(intent);
     }
 
     public void onClickCancelButton (View view) {
 
         //アクティビティを終了させて前の画面に戻る
         finish();
-
-        //何もせずアラーム登録画面に戻る
-        //Intent intent = new Intent();
-        //intent.setClassName("com.so.okamnk.alarmclock","com.so.okamnk.alarmclock.AlarmRegistActivity");
-
-        //アラーム登録画面に遷移
-        //startActivity(intent);
     }
-
 }
