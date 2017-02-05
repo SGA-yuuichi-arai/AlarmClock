@@ -149,7 +149,7 @@ public class AlarmActivity extends AppCompatActivity {
                 stopAlarm();
                 finish();
             } else {
-                Toast.makeText(this, "不正解です。", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "不正解です。", Toast.LENGTH_SHORT).show();      // TODO : キーボードに表示がかぶるのでなんとかしたいが・・・
                 mEditAnswer.setText("");
             }
         } else {
