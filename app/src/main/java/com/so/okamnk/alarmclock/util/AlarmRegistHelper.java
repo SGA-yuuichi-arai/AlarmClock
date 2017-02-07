@@ -305,9 +305,7 @@ public class AlarmRegistHelper {
         try {
             AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
-            Calendar entityCalendar = StringUtility.convertStringToCalendar(entity.getAlarmTime());
-
-            Calendar nearCalender = AlarmClockUtility.getNearCalender(entityCalendar.get(Calendar.HOUR), entityCalendar.get(Calendar.MINUTE));
+            Calendar nearCalender = AlarmClockUtility.getNearCalender(StringUtility.extractHour(entity.getAlarmTime()), StringUtility.extractMinute(entity.getAlarmTime()));
             am.set(AlarmManager.RTC_WAKEUP, nearCalender.getTimeInMillis(), pendingIntent);
             if (listener != null) {
                 listener.onRegistration(entity.getAlarmId(), RegistReturnCode.RET_SUCCEEDED);
@@ -337,8 +335,7 @@ public class AlarmRegistHelper {
         try {
             AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
-            Calendar entityCalendar = StringUtility.convertStringToCalendar(entity.getAlarmTime());
-            Calendar nearCalender = AlarmClockUtility.getNearCalender(entityCalendar.get(Calendar.HOUR), entityCalendar.get(Calendar.MINUTE), dayOfWeek);
+            Calendar nearCalender = AlarmClockUtility.getNearCalender(StringUtility.extractHour(entity.getAlarmTime()), StringUtility.extractMinute(entity.getAlarmTime()), dayOfWeek);
             am.setRepeating(AlarmManager.RTC_WAKEUP, nearCalender.getTimeInMillis(), WEEKLY_INTERVAL, pendingIntent);
             if (listener != null) {
                 listener.onRegistration(entity.getAlarmId(), RegistReturnCode.RET_SUCCEEDED);
