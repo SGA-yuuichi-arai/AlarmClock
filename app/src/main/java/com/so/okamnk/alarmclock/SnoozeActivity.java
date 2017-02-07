@@ -182,6 +182,8 @@ public class SnoozeActivity extends AppCompatActivity implements View.OnClickLis
         intent.putExtra(Define.ALARM_ENTITY, this.alarmEntity);
         intent.putExtra(Define.IS_PREVIEW_KEY, this.previewFlg);
         startActivity(intent);
+
+        finish();
     }
 
     private void countDownReminingTime() {
