@@ -142,12 +142,12 @@ public class SnoozeActivity extends AppCompatActivity implements View.OnClickLis
             String userAnserStr = this.anserEditText.getText().toString();
             if (StringUtility.isNullOrEmpty(userAnserStr) == true) {
                 // 不正解と同じメッセージで
-                Toast.makeText(this, "不正解です。", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "不正解です。", Toast.LENGTH_SHORT).show();
                 return;
             }
 
             if (this.question.isCorrectAnswer(userAnserStr) == false) {
-                Toast.makeText(this, "不正解です。", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "不正解です。", Toast.LENGTH_SHORT).show();
                 this.anserEditText.setText("");
                 return;
             }
