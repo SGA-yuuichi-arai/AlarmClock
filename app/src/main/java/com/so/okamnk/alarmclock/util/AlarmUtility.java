@@ -12,9 +12,9 @@ import com.so.okamnk.alarmclock.Define;
  */
 
 public class AlarmUtility {
-    public static void startAlarmService(Context context, int alarmId) {
+    public static void startAlarmService(Context context, AlarmEntity alarmEntity) {
         Intent intent = new Intent(context, AlarmService.class);
-        intent.putExtra(Define.ALARM_ID_KEY, alarmId);
+        intent.putExtra(Define.ALARM_ID_KEY, alarmEntity);
         context.startService(intent);
     }
 

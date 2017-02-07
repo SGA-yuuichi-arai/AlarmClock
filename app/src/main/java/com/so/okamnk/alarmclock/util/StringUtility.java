@@ -4,6 +4,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * 文字列操作のユーティリティクラス
@@ -51,5 +53,39 @@ public class StringUtility {
     public static String convertCalendarToString(Calendar calendar) {
         SimpleDateFormat formatter = new SimpleDateFormat(DATE_FOMAT, Locale.JAPAN);
         return formatter.format(calendar.getTime());
+    }
+
+    /**
+     * "HH:mm"フォーマットから、HH部分を抽出してintで返します<br>
+     * フォーマットが異なる場合、ParseExceptionをthrowします
+     *
+     * @param alarmTime "HH:mm"フォーマットの文字列
+     * @return int型のHH
+     * @throws ParseException
+     */
+    public static int extractHour(String alarmTime) throws ParseException {
+        Pattern pattern = Pattern.compile("\\d{1,2}:\\d{1,2}");
+        Matcher matcher = pattern.matcher(alarmTime);
+        if (matcher.find() == false) {
+            throw new ParseException("illigal format. \"" + alarmTime + "\"", 0);
+        }
+        return Integer.valueOf(alarmTime.split(":")[0]);
+    }
+
+    /**
+     * "HH:mm"フォーマットから、mm部分を抽出してintで返します<br>
+     * フォーマットが異なる場合、ParseExceptionをthrowします
+     *
+     * @param alarmTime "HH:mm"フォーマットの文字列
+     * @return int型のmm
+     * @throws ParseException
+     */
+    public static int extractMinute(String alarmTime) throws ParseException {
+        Pattern pattern = Pattern.compile("\\d{1,2}:\\d{1,2}");
+        Matcher matcher = pattern.matcher(alarmTime);
+        if (matcher.find() == false) {
+            throw new ParseException("illigal format. \"" + alarmTime + "\"", 0);
+        }
+        return Integer.valueOf(alarmTime.split(":")[1]);
     }
 }
