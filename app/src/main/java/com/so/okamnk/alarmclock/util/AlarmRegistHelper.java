@@ -276,12 +276,12 @@ public class AlarmRegistHelper {
      */
     private boolean isRepeat(AlarmEntity entity) {
         if (entity.getRepeatSunday()
-                && entity.getRepeatMonday()
-                && entity.getRepeatThrsday()
-                && entity.getRepeatTuesday()
-                && entity.getRepeatFriday()
-                && entity.getRepeatSaturday()
-                && entity.getRepeatWednesday()) {
+                || entity.getRepeatMonday()
+                || entity.getRepeatThrsday()
+                || entity.getRepeatTuesday()
+                || entity.getRepeatFriday()
+                || entity.getRepeatSaturday()
+                || entity.getRepeatWednesday()) {
             return true;
         }
 

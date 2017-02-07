@@ -35,7 +35,13 @@ public class AlarmService extends Service {
 
         AlarmDBAdapter alarmDBAdapter = new AlarmDBAdapter(getApplicationContext());
         AlarmEntity entity = (AlarmEntity) intent.getSerializableExtra(Define.ALARM_ENTITY);
+        boolean isPreview = intent.getBooleanExtra(Define.IS_PREVIEW_KEY, false);
 
+        if (isPreview == false) {
+            if (alarmDBAdapter.getAlarm(entity.getAlarmId()) == null) {
+                return START_NOT_STICKY;
+            }
+        }
 
         mAlarmMediaPlayer = AlarmMediaPlayer.getInstance();
         try {
