@@ -158,15 +158,14 @@ public class AlarmActivity extends AppCompatActivity {
         }
     }
 
-    // TODO : AlarmUtility.startAlarmServiceの引数をalarmIDからalarmEntityに変えてもらう。そしてここではそれを呼ぶようにする。
     public void startAlarm() {
         Context context = getApplicationContext();
         Intent intent = new Intent(context, AlarmService.class);
+        intent.putExtra(Define.IS_PREVIEW_KEY, mIsPreview);
         intent.putExtra(Define.ALARM_ENTITY, mAlarmEntity);
         context.startService(intent);
     }
 
-    // TODO : startAlarmと同様にAlarmUtilityのを呼び出すようにする
     public void stopAlarm() {
         Context context = getApplicationContext();
         Intent intent = new Intent(getApplicationContext(), AlarmService.class);
