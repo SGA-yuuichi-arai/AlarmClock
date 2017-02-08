@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
 
+import com.so.okamnk.alarmclock.Define;
 import com.so.okamnk.alarmclock.receiver.AlarmReceiver;
 
 import java.text.ParseException;
@@ -299,7 +300,7 @@ public class AlarmRegistHelper {
 
         Intent intent = new Intent(context, AlarmReceiver.class);
         intent.setType(entity.getAlarmId() + entity.getRegistDate());
-        intent.putExtra("alarmID", entity.getAlarmId());
+        intent.putExtra(Define.ALARM_ID_KEY, entity.getAlarmId());
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
 
         try {
@@ -328,7 +329,7 @@ public class AlarmRegistHelper {
 
         Intent intent = new Intent(context, AlarmReceiver.class);
         intent.setType(entity.getAlarmId() + entity.getRegistDate() + dayOfWeek);
-        intent.putExtra("alarmID", entity.getAlarmId());
+        intent.putExtra(Define.ALARM_ID_KEY, entity.getAlarmId());
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
 
 

@@ -33,14 +33,17 @@ public class AlarmReceiver extends BroadcastReceiver {
      *
      * @param context コンテキスト
      */
+
     private void startAlarmActivity(Context context, Intent intent) {
 
         Intent activityIntent = new Intent(context, AlarmActivity.class);
         AlarmDBAdapter dbAdapter = new AlarmDBAdapter(context);
         AlarmEntity entity = dbAdapter.getAlarm(intent.getIntExtra(Define.ALARM_ID_KEY, 0));
-        activityIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        activityIntent.putExtra(Define.IS_PREVIEW_KEY, false);
-        activityIntent.putExtra(Define.ALARM_ENTITY, entity);
-        context.startActivity(activityIntent);
+        if (entity != null) {
+            activityIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            activityIntent.putExtra(Define.IS_PREVIEW_KEY, false);
+            activityIntent.putExtra(Define.ALARM_ENTITY, entity);
+            context.startActivity(activityIntent);
+        }
     }
 }
