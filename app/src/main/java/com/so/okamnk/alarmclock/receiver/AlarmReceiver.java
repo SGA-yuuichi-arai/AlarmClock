@@ -5,6 +5,9 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.so.okamnk.alarmclock.AlarmActivity;
+import com.so.okamnk.alarmclock.Define;
+import com.so.okamnk.alarmclock.util.AlarmDBAdapter;
+import com.so.okamnk.alarmclock.util.AlarmEntity;
 
 /**
  * アラームアプリのアラームレシーバクラス
@@ -33,9 +36,11 @@ public class AlarmReceiver extends BroadcastReceiver {
     private void startAlarmActivity(Context context, Intent intent) {
 
         Intent activityIntent = new Intent(context, AlarmActivity.class);
+        AlarmDBAdapter dbAdapter = new AlarmDBAdapter(context);
+        AlarmEntity entity = dbAdapter.getAlarm(intent.getIntExtra(Define.ALARM_ID_KEY, 0));
         activityIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        activityIntent.putExtra("isPreview", false);
-        activityIntent.putExtra("alarmID", intent.getIntExtra("alarmID", 0));
+        activityIntent.putExtra(Define.IS_PREVIEW_KEY, false);
+        activityIntent.putExtra(Define.ALARM_ENTITY, entity);
         context.startActivity(activityIntent);
     }
 }
