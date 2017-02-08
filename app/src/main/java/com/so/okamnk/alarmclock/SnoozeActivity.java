@@ -45,7 +45,8 @@ public class SnoozeActivity extends AppCompatActivity implements View.OnClickLis
         this.question = Question.createRandomQuestion();
         this.alarmEntity = (AlarmEntity) getIntent().getSerializableExtra(Define.ALARM_ENTITY);
         this.previewFlg = getIntent().getBooleanExtra(Define.IS_PREVIEW_KEY, false);
-        this.remainingTime = alarmEntity.getSnoozeInterval();
+        // インターバルは分単位登録されているので、ここで秒に直す
+        this.remainingTime = alarmEntity.getSnoozeInterval() * 60;
 
         // 現在時刻
         baseTimeCalender = Calendar.getInstance();
