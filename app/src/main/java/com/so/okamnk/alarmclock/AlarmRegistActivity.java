@@ -118,19 +118,19 @@ public class AlarmRegistActivity extends AppCompatActivity implements View.OnCli
         textView_volumeValue = (TextView) findViewById(R.id.textView_volumeValue);
 
         // パターンのSpinner
-        spinner_pattern = new Spinner(this);
+        spinner_pattern = (Spinner) findViewById(R.id.spinner_pattern);
         setSpinnerListener(spinner_pattern, R.id.spinner_pattern, R.array.pattern);
         // アラーム解除
-        spinner_release = new Spinner(this);
+        spinner_release = (Spinner) findViewById(R.id.spinner_release);
         setSpinnerListener(spinner_release, R.id.spinner_release, R.array.release);
         // 間隔
-        spinner_interval = new Spinner(this);
+        spinner_interval = (Spinner) findViewById(R.id.spinner_interval);
         setSpinnerListener(spinner_interval, R.id.spinner_interval, R.array.interval);
         // 回数
-        spinner_times = new Spinner(this);
+        spinner_times = (Spinner) findViewById(R.id.spinner_times);
         setSpinnerListener(spinner_times, R.id.spinner_times, R.array.times);
         // マナーモード
-        spinner_mannerMode = new Spinner(this);
+        spinner_mannerMode = (Spinner) findViewById(R.id.spinner_mannerMode);
         setSpinnerListener(spinner_mannerMode, R.id.spinner_mannerMode, R.array.mannerMode);
 
         //Toggle
@@ -382,10 +382,15 @@ public class AlarmRegistActivity extends AppCompatActivity implements View.OnCli
         String seekBarValue = ((Integer) seekBar.getProgress()).toString();
         textView_volumeValue.setText(seekBarValue);
 
+        Log.i("getSoundMode", String.valueOf(alarmEntity.getSoundMode()));
         spinner_pattern.setSelection(alarmEntity.getSoundMode());
+        Log.i("getStopMode", String.valueOf(alarmEntity.getStopMode()));
         spinner_release.setSelection(alarmEntity.getStopMode());
+        Log.i("getSnoozeInterval", String.valueOf(alarmEntity.getSnoozeInterval()));
         spinner_interval.setSelection(alarmEntity.getSnoozeInterval());
+        Log.i("getSnoozeNum", String.valueOf(alarmEntity.getSnoozeNum()));
         spinner_times.setSelection(alarmEntity.getSnoozeNum());
+        Log.i("getManorMode", String.valueOf(alarmEntity.getManorMode()));
         spinner_mannerMode.setSelection(alarmEntity.getManorMode());
 
         toggleButton_monday.setChecked(alarmEntity.getRepeatMonday());
@@ -491,6 +496,7 @@ public class AlarmRegistActivity extends AppCompatActivity implements View.OnCli
                 }
             }
         };
+
         helper.regist(getApplicationContext(), entities, alarm_listener);
 
         return true;
@@ -527,6 +533,7 @@ public class AlarmRegistActivity extends AppCompatActivity implements View.OnCli
         }
 
         str = String.format("%02d", hour) + ':' + String.format("%02d", minute);
+
         return str;
     }
 
