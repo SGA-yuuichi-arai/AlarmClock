@@ -28,6 +28,7 @@ import com.so.okamnk.alarmclock.util.AlarmEntity;
 import com.so.okamnk.alarmclock.util.AlarmRegistHelper;
 import com.so.okamnk.alarmclock.util.StringUtility;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 
@@ -153,7 +154,11 @@ public class AlarmRegistActivity extends AppCompatActivity implements View.OnCli
         if (isEdit) {
             alarmEntity = (AlarmEntity) getIntent().getSerializableExtra(ALARM_ENTITY);
             Log.i("Entity_ID", ((Integer) alarmEntity.getAlarmId()).toString());
-            displayViewEdit();
+            try {
+                displayViewEdit();
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
         } else {
             displayViewAdd();
         }
@@ -343,7 +348,7 @@ public class AlarmRegistActivity extends AppCompatActivity implements View.OnCli
     /**
      * アラーム編集の場合にAlarmEntityの値を表示させる
      */
-    private void displayViewEdit() {
+    private void displayViewEdit() throws ParseException {
 
         alarmId = alarmEntity.getAlarmId();
 
@@ -355,13 +360,17 @@ public class AlarmRegistActivity extends AppCompatActivity implements View.OnCli
         // https://blog.tagbangers.co.jp/2015/11/07/android-timepicker-gethour-getminute
         int currentApiVersion = Build.VERSION.SDK_INT;
         if (currentApiVersion > Build.VERSION_CODES.LOLLIPOP_MR1) {
-            int hour = Integer.parseInt(alarmTime.substring(0, 1));
-            int minute = Integer.parseInt(alarmTime.substring(3, 4));
+            int hour = StringUtility.extractHour(alarmTime);
+            int minute = StringUtility.extractMinute(alarmTime);
+            Log.i("hour=", String.valueOf(hour));
+            Log.i("minute=", String.valueOf(minute));
             timePicker_alarmTime.setHour(hour);
             timePicker_alarmTime.setMinute(minute);
         } else {
-            Integer hour = Integer.valueOf(alarmTime.substring(0, 1));
-            Integer minute = Integer.valueOf(alarmTime.substring(3, 4));
+            Integer hour = StringUtility.extractHour(alarmTime);
+            Integer minute = StringUtility.extractMinute(alarmTime);
+            Log.i("hour=", String.valueOf(hour));
+            Log.i("minute=", String.valueOf(minute));
             timePicker_alarmTime.setCurrentHour(hour);
             timePicker_alarmTime.setCurrentMinute(minute);
         }
